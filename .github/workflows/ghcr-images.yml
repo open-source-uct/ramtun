@@ -2,7 +2,7 @@ name: GHCR Images
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - "apps/server/**"
       - "apps/client/**"
@@ -96,10 +96,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ steps.owner.outputs.value }}/ramtun-server
+          images: ghcr.io/${{ steps.owner.outputs.value }}/ramtun
           tags: |
-            type=sha,prefix=sha-
-            type=raw,value=latest
+            type=sha,prefix=server-sha-
+            type=raw,value=server-latest
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -146,10 +146,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ steps.owner.outputs.value }}/ramtun-client
+          images: ghcr.io/${{ steps.owner.outputs.value }}/ramtun
           tags: |
-            type=sha,prefix=sha-
-            type=raw,value=latest
+            type=sha,prefix=client-sha-
+            type=raw,value=client-latest
 
       - name: Build and push
         uses: docker/build-push-action@v6
