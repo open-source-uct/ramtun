@@ -5,6 +5,7 @@ type QuestionExport = {
 	prompt: string
 	options: string[]
 	answerIndex: number
+	justification?: string
 }
 
 const sanitizeFileName = (name: string) =>
@@ -28,6 +29,7 @@ const toQuestionExport = (bank: QuestionBank): QuestionExport[] =>
 		prompt: question.prompt,
 		options: question.options,
 		answerIndex: question.answer_index ?? question.answerIndex ?? 0,
+		justification: question.justification ?? undefined,
 	}))
 
 export const exportBankMarkdown = (bank: QuestionBank): void => {

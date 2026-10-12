@@ -64,3 +64,9 @@ export const renderMarkdown = (markdown: string): string => {
 	const html = marked.parse(markdown, { async: false })
 	return DOMPurify.sanitize(html)
 }
+
+// Sin bloques (<p>, listas): para textos dentro de botones o de una sola línea.
+export const renderMarkdownInline = (markdown: string): string => {
+	const html = marked.parseInline(markdown, { async: false })
+	return DOMPurify.sanitize(html)
+}

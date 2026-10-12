@@ -60,6 +60,8 @@ print("hola")
 - [ ] Londres
 - [ ] Berlín
 
+La capital de Francia es París desde hace siglos.
+
 ### ¿Cuánto es 2 + 2?
 - [X] 4
 - [ ] 3
@@ -257,6 +259,10 @@ print("hola")
 					<code class="text-zinc-900">- [X]</code> marca la opción correcta y
 					<code class="text-zinc-900">- [ ]</code> las demás. Debe haber exactamente una correcta
 					y entre 2 y 5 opciones
+				</li>
+				<li>
+					Texto después de la última opción: justificación opcional que el estudiante
+					ve al revisar sus resultados (soporta Markdown y LaTeX)
 				</li>
 			</ul>
 

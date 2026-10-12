@@ -1,7 +1,10 @@
 <script lang="ts">
 	import Markdown from "$lib/shared/components/Markdown.svelte"
 
-	let { value = $bindable("") }: { value?: string } = $props()
+	let {
+		value = $bindable(""),
+		placeholder = "Escribe el enunciado en Markdown...",
+	}: { value?: string; placeholder?: string } = $props()
 
 	let mode = $state<"write" | "preview">("write")
 </script>
@@ -27,17 +30,14 @@
 	</div>
 
 	{#if mode === "write"}
-		<textarea
-			class="input-base min-h-32 w-full resize-y font-mono"
-			bind:value
-			placeholder="Escribe el enunciado en Markdown..."
+		<textarea class="input-base min-h-32 w-full resize-y font-mono" bind:value {placeholder}
 		></textarea>
 	{:else}
 		<div class="input-base min-h-32 overflow-y-auto">
 			{#if value}
 				<Markdown content={value} />
 			{:else}
-				<p class="m-0 text-sm text-zinc-500">Sin contenido para previsualizar.</p>
+				<p class="m-0 text-sm text-zinc-500">Escribe algo para ver la vista previa.</p>
 			{/if}
 		</div>
 	{/if}

@@ -132,7 +132,7 @@
 		</div>
 	</header>
 
-	<section class="panel-elevated mx-auto w-full min-w-0 px-12 py-4">
+	<section class="panel-elevated mx-auto w-full min-w-0 px-3 py-4 sm:px-12">
 		{@render children()}
 	</section>
 </main>

@@ -59,7 +59,7 @@
 			<div>
 				<h3 class="sr-only">Bancos de preguntas</h3>
 				<p class="m-0 mt-2 text-sm text-zinc-700">
-					Sube y gestiona bancos de preguntas en formato JSON.
+					Sube y gestiona bancos de preguntas en formato Markdown.
 				</p>
 			</div>
 			<button
@@ -82,7 +82,7 @@
 			<div class="panel-surface py-10 text-center">
 				<p class="mb-2 text-zinc-600">No hay bancos de preguntas.</p>
 				<p class="text-sm text-zinc-500">
-					Sube un archivo JSON para crear el primer banco.
+					Sube un archivo Markdown para crear el primer banco.
 				</p>
 			</div>
 		{:else}

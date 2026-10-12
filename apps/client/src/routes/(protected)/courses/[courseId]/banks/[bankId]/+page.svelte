@@ -46,6 +46,7 @@
 	type DraftQuestion = {
 		prompt: string
 		options: string[]
+		justification: string
 	}
 
 	let editing = $state(false)
@@ -61,6 +62,7 @@
 		draft = bank.questions.map((question) => ({
 			prompt: question.prompt,
 			options: question.options,
+			justification: question.justification ?? "",
 		}))
 		editing = true
 	}
@@ -71,7 +73,14 @@
 	}
 
 	const updateMutation = useMutation(() => ({
-		mutationFn: (questions: DraftQuestion[]) => banksService.update(data.bankId, { questions }),
+		mutationFn: (questions: DraftQuestion[]) =>
+			banksService.update(data.bankId, {
+				questions: questions.map((question) => ({
+					prompt: question.prompt,
+					options: question.options,
+					justification: question.justification.trim() || null,
+				})),
+			}),
 		onSuccess: async () => {
 			editing = false
 			draft = []
@@ -219,6 +228,14 @@
 									</div>
 								{/each}
 							</div>
+
+							<label class="mt-4 grid gap-1.5">
+								<span class="text-sm text-zinc-800">Justificación (opcional)</span>
+								<MarkdownEditor
+									bind:value={question.justification}
+									placeholder="Explica por qué la respuesta correcta lo es..."
+								/>
+							</label>
 						</article>
 					{/each}
 				</div>
@@ -238,10 +255,18 @@
 										class="quiz-option"
 										data-active={optionIndex === correctIndex(question)}
 									>
-										{option}
+										<Markdown content={option} inline />
 									</div>
 								{/each}
 							</div>
+							{#if question.justification}
+								<div
+									class="mt-4 grid grid-cols-[minmax(0,1fr)] gap-2 border-t border-zinc-200 pt-4"
+								>
+									<p class="m-0 text-sm font-medium text-black">Justificación</p>
+									<Markdown content={question.justification} />
+								</div>
+							{/if}
 						</article>
 					{/each}
 				</div>

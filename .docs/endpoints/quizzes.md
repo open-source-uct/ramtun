@@ -31,13 +31,15 @@
   "attemptDurationMinutes": 30,
   "questionCount": 10,
   "bankIds": ["uuid"],
-  "certaintyConfig": null
+  "certaintyConfig": null,
+  "resultsMultipleViews": false
 }
 ```
 
 - Notes:
   - `kind=certainty` requires `certaintyConfig`.
   - `kind=traditional` must not include `certaintyConfig`.
+  - `resultsMultipleViews` (optional, default `false`): lets students reopen their results; otherwise they can view them once.
 - Response `data`: `QuizView`
 
 ## DELETE `/quizzes/{quizId}`
@@ -67,7 +69,7 @@
   - `{ quizId, title, kind, questionCount, certaintyTable, attemptDurationMinutes, startsAt }`
 
 ## Output Shape: `QuizView`
-- `{ id, title, kind, joinCode, questionCount, certaintyTable, attemptDurationMinutes, startsAt, resultsPublishedAt, createdAt, course }`
+- `{ id, title, kind, joinCode, questionCount, certaintyTable, attemptDurationMinutes, startsAt, resultsPublishedAt, resultsMultipleViews, createdAt, course }`
 - `course` is embedded course entity data.
 
 ## Common Domain Errors

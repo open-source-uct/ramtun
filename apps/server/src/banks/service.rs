@@ -142,6 +142,13 @@ impl QuestionBankService {
 						.get(position)
 						.map(|question| question.answer_index)
 						.unwrap_or(0);
+					let justification = match &q.justification {
+						PatchField::Missing => current
+							.get(position)
+							.and_then(|question| question.justification.clone()),
+						PatchField::Clear => None,
+						PatchField::Set(value) => normalize_justification(Some(value)),
+					};
 
 					Question::builder()
 						.bank_id(bank.id)
@@ -149,6 +156,7 @@ impl QuestionBankService {
 						.prompt(q.prompt.clone())
 						.options(q.options.clone())
 						.answer_index(answer_index)
+						.maybe_justification(justification)
 						.created_at(now)
 						.build()
 				})
@@ -299,6 +307,31 @@ fn build_question(
 		.prompt(input.prompt.clone())
 		.options(input.options.clone())
 		.answer_index(input.answer_index as i16)
+		.maybe_justification(normalize_justification(input.justification.as_deref()))
 		.created_at(created_at)
 		.build()
+}
+
+/// Trims the justification and stores `None` when nothing is left, so blank
+/// explanations are treated as absent.
+fn normalize_justification(justification: Option<&str>) -> Option<String> {
+	justification
+		.map(str::trim)
+		.filter(|text| !text.is_empty())
+		.map(str::to_owned)
+}
+
+#[cfg(test)]
+mod tests {
+	use super::normalize_justification;
+
+	#[test]
+	fn normalize_justification_drops_blank_and_trims_text() {
+		assert_eq!(normalize_justification(Some("   ")), None);
+		assert_eq!(normalize_justification(None), None);
+		assert_eq!(
+			normalize_justification(Some("  Porque $x = 2$  ")),
+			Some("Porque $x = 2$".to_owned())
+		);
+	}
 }

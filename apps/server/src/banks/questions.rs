@@ -131,7 +131,7 @@ impl QuestionRepository {
 		questions: &[Question],
 	) -> AppResult<()> {
 		let mut query_builder = sqlx::QueryBuilder::new(
-			"INSERT INTO questions (id, bank_id, position, prompt, options, answer_index, created_at, deleted_at) ",
+			"INSERT INTO questions (id, bank_id, position, prompt, options, answer_index, justification, created_at, deleted_at) ",
 		);
 
 		query_builder.push_values(questions.iter(), |mut b, q| {
@@ -141,6 +141,7 @@ impl QuestionRepository {
 				.push_bind(&q.prompt)
 				.push_bind(&q.options)
 				.push_bind(q.answer_index)
+				.push_bind(&q.justification)
 				.push_bind(q.created_at)
 				.push_bind(q.deleted_at);
 		});

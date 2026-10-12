@@ -64,10 +64,11 @@ impl QuizRepository {
                 attempt_duration_minutes,
                 starts_at,
                 results_published_at,
+                results_multiple_views,
                 created_at,
                 deleted_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             ON CONFLICT (id)
             DO UPDATE SET
                 course_id = EXCLUDED.course_id,
@@ -80,6 +81,7 @@ impl QuizRepository {
                 attempt_duration_minutes = EXCLUDED.attempt_duration_minutes,
                 starts_at = EXCLUDED.starts_at,
                 results_published_at = EXCLUDED.results_published_at,
+                results_multiple_views = EXCLUDED.results_multiple_views,
                 created_at = EXCLUDED.created_at,
                 deleted_at = EXCLUDED.deleted_at
             RETURNING *",
@@ -95,6 +97,7 @@ impl QuizRepository {
 		.bind(quiz.attempt_duration_minutes)
 		.bind(quiz.starts_at)
 		.bind(quiz.results_published_at)
+		.bind(quiz.results_multiple_views)
 		.bind(quiz.created_at)
 		.bind(quiz.deleted_at)
 		.fetch_one(&mut **tx)

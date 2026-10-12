@@ -74,6 +74,7 @@ pub struct QuestionResultView {
 	pub options: Vec<String>,
 	pub answer_index: Option<i16>,
 	pub correct_answer_index: i16,
+	pub justification: Option<String>,
 	pub certainty_level: Option<CertaintyLevel>,
 	pub is_correct: bool,
 	pub awarded_points: i16,

@@ -24,6 +24,9 @@ pub struct Quiz {
 	pub attempt_duration_minutes: i16,
 	pub starts_at: DateTime<Utc>,
 	pub results_published_at: Option<DateTime<Utc>>,
+	/// Lets students reopen their published results instead of viewing them once.
+	#[builder(default)]
+	pub results_multiple_views: bool,
 	pub created_at: DateTime<Utc>,
 	pub deleted_at: Option<DateTime<Utc>>,
 }

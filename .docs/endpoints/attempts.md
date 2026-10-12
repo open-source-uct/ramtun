@@ -60,12 +60,12 @@
 - Summary: View own attempt result by join code (student-facing).
 - Auth: Bearer token required.
 - Roles (AuthzAction::QuizViewAttemptResultByCode): `admin`, `func`, `student`.
-- Policy: student can only view after quiz results are published.
+- Policy: student can only view after quiz results are published, and only once unless the quiz has `resultsMultipleViews`.
 - Path params:
   - `joinCode: string`
 - Response `data`: `AttemptResultView`
   - `{ attemptId, studentId, userName, quizId, submittedAt, grade, score, maxScore, resultsViewedAt, questions }`
-  - `questions[]`: `{ questionId, question, options, images, answerIndex, correctAnswerIndex, certaintyLevel, isCorrect, awardedPoints }`
+  - `questions[]`: `{ questionId, question, options, images, answerIndex, correctAnswerIndex, justification, certaintyLevel, isCorrect, awardedPoints }` (`justification`: Markdown/LaTeX o `null`)
 
 ## GET `/attempts/{attemptId}/results/managed`
 - Summary: View evaluated attempt result (management view).
@@ -76,7 +76,7 @@
   - `attemptId: uuid`
 - Response `data`: `AttemptResultView`
   - `{ attemptId, studentId, userName, quizId, submittedAt, grade, score, maxScore, resultsViewedAt, questions }`
-  - `questions[]`: `{ questionId, question, options, images, answerIndex, correctAnswerIndex, certaintyLevel, isCorrect, awardedPoints }`
+  - `questions[]`: `{ questionId, question, options, images, answerIndex, correctAnswerIndex, justification, certaintyLevel, isCorrect, awardedPoints }` (`justification`: Markdown/LaTeX o `null`)
 
 ## Common Domain Errors
 - `403`: quiz not started, quiz ended, expired, already submitted, forbidden.

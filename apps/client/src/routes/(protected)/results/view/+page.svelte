@@ -9,8 +9,13 @@
 
 	let result = (page.state as { results?: AttemptResult })?.results
 
+	// A reload loses page.state: fetch again by code, which the server allows only for quizzes with multiple views.
 	onMount(async () => {
-		if (!result) await goto("/results")
+		if (result) return
+		const joinCode = page.url.searchParams.get("joinCode")
+		await goto(joinCode ? `/results?code=${encodeURIComponent(joinCode)}` : "/results", {
+			replaceState: true,
+		})
 	})
 </script>
 

@@ -1,0 +1,1 @@
+ALTER TABLE quizzes ADD COLUMN results_multiple_views BOOLEAN NOT NULL DEFAULT FALSE;

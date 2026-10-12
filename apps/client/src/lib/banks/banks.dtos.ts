@@ -16,6 +16,12 @@ const questionInputSchema = v.object({
 		v.integer("answerIndex debe ser un entero válido."),
 		v.minValue(0, "answerIndex no puede ser negativo.")
 	),
+	justification: v.optional(
+		v.pipe(
+			v.string(),
+			v.maxLength(5000, "La justificación no puede superar los 5000 caracteres.")
+		)
+	),
 })
 
 const questionSchema = v.pipe(
@@ -38,6 +44,7 @@ export type Question = {
 	id: string
 	prompt: string
 	options: string[]
+	justification?: string | null
 	answer_index?: number
 	answerIndex?: number
 }
@@ -61,6 +68,7 @@ export type CreateQuestionBankInput = {
 		prompt: string
 		options: string[]
 		answerIndex: number
+		justification?: string
 	}[]
 }
 
@@ -69,5 +77,6 @@ export type UpdateQuestionBankInput = {
 	questions: {
 		prompt: string
 		options: string[]
+		justification?: string | null
 	}[]
 }

@@ -72,7 +72,7 @@
 		</div>
 		<div class="panel-muted p-3 sm:p-4">
 			<p class="m-0 flex items-center gap-2 text-xs font-medium text-zinc-700">
-				<ChartColumn size={13} /> Puntaje
+				<ChartColumn size={13} /> Puntos
 			</p>
 			<p class="mt-1 mb-0 text-lg font-semibold text-black">
 				{result.score} / {result.maxScore}
@@ -124,24 +124,39 @@
 								question.answerIndex
 							)}`}
 						>
-							<div class="flex items-center justify-between gap-3">
-								<div class="min-w-0 flex-1">{option}</div>
+							<div
+								class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
+							>
+								<div class="min-w-0 flex-1">
+									<Markdown content={option} inline />
+								</div>
 								{#if isSelected}
-									<span
-										class="inline-flex h-6 min-w-12 shrink-0 items-center justify-center rounded-sm border border-zinc-300 bg-white/90 px-2 text-xs font-semibold text-zinc-700"
-									>
-										{formatSignedPoints(question.awardedPoints)}pt
-									</span>
-									<span
-										class="inline-flex h-6 min-w-16 shrink-0 items-center justify-center rounded-sm border border-blue-500 bg-blue-50 px-2 text-xs font-semibold text-blue-800"
-									>
-										Alternativa seleccionada
-									</span>
+									<div class="flex flex-wrap gap-2 sm:shrink-0">
+										<span
+											class="inline-flex h-6 min-w-12 shrink-0 items-center justify-center rounded-sm border border-zinc-300 bg-white/90 px-2 text-xs font-semibold text-zinc-700"
+										>
+											{formatSignedPoints(question.awardedPoints)}pt
+										</span>
+										<span
+											class="inline-flex h-6 min-w-16 shrink-0 items-center justify-center rounded-sm border border-blue-500 bg-blue-50 px-2 text-xs font-semibold text-blue-800"
+										>
+											Alternativa seleccionada
+										</span>
+									</div>
 								{/if}
 							</div>
 						</div>
 					{/each}
 				</div>
+
+				{#if question.justification}
+					<div
+						class="mt-4 grid grid-cols-[minmax(0,1fr)] gap-2 border-t border-zinc-200 pt-4"
+					>
+						<p class="m-0 text-sm font-medium text-black">Justificación</p>
+						<Markdown content={question.justification} />
+					</div>
+				{/if}
 
 				{#if question.certaintyLevel}
 					<div class="mt-4 grid gap-2 border-t border-zinc-200 pt-4">

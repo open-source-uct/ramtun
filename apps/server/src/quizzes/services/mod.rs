@@ -143,6 +143,7 @@ impl QuizService {
 			.maybe_certainty_table(input.certainty_config.map(CertaintyTable::from))
 			.attempt_duration_minutes(input.attempt_duration_minutes)
 			.starts_at(starts_at)
+			.results_multiple_views(input.results_multiple_views)
 			.created_at(Utc::now())
 			.max_score(max_score)
 			.build();

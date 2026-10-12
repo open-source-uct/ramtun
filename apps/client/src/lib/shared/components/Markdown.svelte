@@ -1,17 +1,24 @@
 <script lang="ts">
-	import { renderMarkdown } from "$lib/shared/markdown"
+	import { renderMarkdown, renderMarkdownInline } from "$lib/shared/markdown"
 
-	let { content }: { content: string } = $props()
+	// `inline` produce HTML sin bloques dentro de un span raíz, válido en button o label.
+	let { content, inline = false }: { content: string; inline?: boolean } = $props()
 
-	const html = $derived(renderMarkdown(content))
+	const html = $derived(inline ? renderMarkdownInline(content) : renderMarkdown(content))
 </script>
 
-<div class="markdown-body">
+<svelte:element this={inline ? "span" : "div"} class="markdown-body" class:markdown-inline={inline}>
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML is sanitized with DOMPurify before rendering -->
 	{@html html}
-</div>
+</svelte:element>
 
 <style>
+	.markdown-inline {
+		display: block;
+		min-width: 0;
+		overflow-wrap: break-word;
+	}
+
 	.markdown-body :global(p) {
 		margin: 0 0 0.75em;
 	}
@@ -93,6 +100,11 @@
 		background: transparent;
 		padding: 0;
 		font-size: 0.875rem;
+	}
+
+	.markdown-body :global(.katex-display) {
+		overflow-x: auto;
+		overflow-y: hidden;
 	}
 
 	.markdown-body :global(table) {

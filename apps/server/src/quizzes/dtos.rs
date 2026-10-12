@@ -39,6 +39,9 @@ pub struct CreateQuizDto {
 
 	#[validate(nested)]
 	pub certainty_config: Option<CertaintyTableDto>,
+
+	#[serde(default)]
+	pub results_multiple_views: bool,
 }
 
 #[derive(Clone, Debug, Validate, Serialize, Deserialize)]

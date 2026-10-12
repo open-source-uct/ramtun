@@ -38,6 +38,8 @@ pub struct Question {
 	pub prompt: String,
 	pub options: Vec<String>,
 	pub answer_index: i16,
+	/// Optional Markdown/LaTeX explanation shown to students in their results.
+	pub justification: Option<String>,
 	#[serde(skip_serializing)]
 	pub created_at: DateTime<Utc>,
 	#[serde(skip_serializing)]
