@@ -69,7 +69,7 @@ pub enum QuizError {
 
 	#[http(
 		code = 409,
-		message = "Este quiz ya tiene intentos y no se puede editar."
+		message = "Este quiz ya tiene intentos o resultados publicados: solo puedes cambiar su título y si se pueden revisar los resultados más de una vez."
 	)]
 	#[error("Quiz has attempts and is locked")]
 	LockedForAttempts,

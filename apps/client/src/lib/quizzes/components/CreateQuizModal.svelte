@@ -72,6 +72,7 @@
 			questionCount: "10",
 			bankIds: [] as string[],
 			certaintyConfig: null,
+			resultsMultipleViews: false,
 		} satisfies v.InferInput<typeof createQuizDTOSchema>
 	})
 
@@ -127,7 +128,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-(--scrim) p-4"
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -241,7 +242,7 @@
 					<Field of={form} path={["attemptDurationMinutes"]}>
 						{#snippet children(field)}
 							<label class="grid gap-1.5">
-								<span class="text-sm text-zinc-800">Duracion (min)</span>
+								<span class="text-sm text-zinc-800">Duración (min)</span>
 								<input
 									{...field.props}
 									type="number"
@@ -278,11 +279,32 @@
 					{/snippet}
 				</Field>
 
+				<Field of={form} path={["resultsMultipleViews"]}>
+					{#snippet children(field)}
+						<label class="flex cursor-pointer items-start gap-2.5">
+							<input
+								{...field.props}
+								type="checkbox"
+								class="mt-0.5"
+								checked={field.input ?? false}
+							/>
+							<span class="grid gap-0.5">
+								<span class="text-sm text-zinc-800">
+									Permitir revisar los resultados más de una vez
+								</span>
+								<span class="text-xs text-zinc-500">
+									Si no la marcas, cada estudiante ve sus resultados una sola vez.
+								</span>
+							</span>
+						</label>
+					{/snippet}
+				</Field>
+
 				{#if kind === "certainty"}
 					<div class="grid gap-3">
 						<div class="flex items-center justify-between">
 							<span class="text-sm text-zinc-800">Tabla de certeza</span>
-							<span class="text-xs text-zinc-500">Puntaje por respuesta</span>
+							<span class="text-xs text-zinc-500">Puntos por respuesta</span>
 						</div>
 						<div class="overflow-x-auto rounded-[4px] border border-zinc-200">
 							<table class="w-full border-collapse text-xs">

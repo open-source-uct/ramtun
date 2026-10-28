@@ -1,17 +1,24 @@
 <script lang="ts">
-	import { renderMarkdown } from "$lib/shared/markdown"
+	import { renderMarkdown, renderMarkdownInline } from "$lib/shared/markdown"
 
-	let { content }: { content: string } = $props()
+	// `inline` produce HTML sin bloques dentro de un span raíz, válido en button o label.
+	let { content, inline = false }: { content: string; inline?: boolean } = $props()
 
-	const html = $derived(renderMarkdown(content))
+	const html = $derived(inline ? renderMarkdownInline(content) : renderMarkdown(content))
 </script>
 
-<div class="markdown-body">
+<svelte:element this={inline ? "span" : "div"} class="markdown-body" class:markdown-inline={inline}>
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML is sanitized with DOMPurify before rendering -->
 	{@html html}
-</div>
+</svelte:element>
 
 <style>
+	.markdown-inline {
+		display: block;
+		min-width: 0;
+		overflow-wrap: break-word;
+	}
+
 	.markdown-body :global(p) {
 		margin: 0 0 0.75em;
 	}
@@ -26,7 +33,7 @@
 	.markdown-body :global(h4) {
 		margin: 0 0 0.5em;
 		font-weight: 600;
-		color: #171412;
+		color: var(--ink);
 	}
 
 	.markdown-body :global(h1) {
@@ -56,26 +63,27 @@
 	}
 
 	.markdown-body :global(a) {
-		color: #1c6c48;
+		color: var(--ok);
 		text-decoration: underline;
 	}
 
 	.markdown-body :global(blockquote) {
 		margin: 0 0 0.75em;
-		border-left: 3px solid #d7d0c8;
+		border-left: 3px solid var(--line);
 		padding-left: 1rem;
-		color: #58514a;
+		color: var(--ink-muted);
 	}
 
 	.markdown-body :global(hr) {
 		margin: 1em 0;
 		border: 0;
-		border-top: 1px solid #d7d0c8;
+		border-top: 1px solid var(--line);
 	}
 
+	/* El chip se tiñe con el color del texto para leerse también sobre fondos de acento (opción activa). */
 	.markdown-body :global(code) {
 		border-radius: 4px;
-		background: #f0f0eb;
+		background: color-mix(in srgb, currentColor 12%, transparent);
 		padding: 0.125em 0.375em;
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		font-size: 0.875em;
@@ -85,7 +93,7 @@
 		margin: 0 0 0.75em;
 		overflow-x: auto;
 		border-radius: 6px;
-		background: #fafaf8;
+		background: var(--paper-soft);
 		padding: 0.875rem 1rem;
 	}
 
@@ -95,6 +103,11 @@
 		font-size: 0.875rem;
 	}
 
+	.markdown-body :global(.katex-display) {
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+
 	.markdown-body :global(table) {
 		margin: 0 0 0.75em;
 		border-collapse: collapse;
@@ -102,12 +115,12 @@
 
 	.markdown-body :global(th),
 	.markdown-body :global(td) {
-		border: 1px solid #d7d0c8;
+		border: 1px solid var(--line);
 		padding: 0.375rem 0.625rem;
 	}
 
 	.markdown-body :global(th) {
-		background: #f0f0eb;
+		background: var(--paper-muted);
 		font-weight: 600;
 	}
 

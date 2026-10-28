@@ -37,6 +37,19 @@ impl AttemptRepository {
 		Ok(attempt)
 	}
 
+	pub async fn exists_for_quiz(&self, quiz_id: &QuizId) -> AppResult<bool> {
+		let exists = sqlx::query_scalar::<_, bool>(
+			"SELECT EXISTS (
+                SELECT 1 FROM attempts WHERE quiz_id = $1 AND deleted_at IS NULL
+            )",
+		)
+		.bind(quiz_id)
+		.fetch_one(self.db.get_pool())
+		.await?;
+
+		Ok(exists)
+	}
+
 	pub async fn find_by_id(&self, attempt_id: &AttemptId) -> AppResult<Option<Attempt>> {
 		let attempt = sqlx::query_as::<_, Attempt>(
 			"SELECT * FROM attempts WHERE id = $1 AND deleted_at IS NULL",

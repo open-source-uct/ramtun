@@ -6,3 +6,5 @@ target/
 
 **/build
 **/README.md
+**/.astro
+**/dist

@@ -3,7 +3,21 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" href="/favicon-light.png" />
+		<!-- El SVG cambia de color con el tema del navegador; los PNG cubren a quien no lo soporta. -->
+		<link rel="icon" href="/favicon-light.png" media="(prefers-color-scheme: light)" />
+		<link rel="icon" href="/favicon-dark.png" media="(prefers-color-scheme: dark)" />
+		<link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
+		<script>
+			// Fija el tema antes del primer pintado para evitar el destello claro. La lógica de
+			// alternancia vive en `lib/shared/theme.svelte.ts`.
+			try {
+				const stored = localStorage.getItem("theme")
+				const dark = stored
+					? stored === "dark"
+					: window.matchMedia("(prefers-color-scheme: dark)").matches
+				document.documentElement.classList.toggle("dark", dark)
+			} catch {}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

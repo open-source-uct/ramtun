@@ -4,9 +4,11 @@
 	import { resolve } from "$app/paths"
 	import { CircleStop } from "lucide-svelte"
 	import { quizzesService } from "$lib/quizzes/service"
-	import { Plus, Trash2, Eye } from "lucide-svelte"
+	import type { Quiz } from "$lib/quizzes/entity"
+	import { Plus, Trash2, Eye, Pencil } from "lucide-svelte"
 	import { useQuery, useMutation, useQueryClient } from "$lib/shared/http/tanstack"
 
+	import EditQuizModal from "$lib/quizzes/components/EditQuizModal.svelte"
 	import CreateQuizModal from "$lib/quizzes/components/CreateQuizModal.svelte"
 	import QuizStatusBadge from "$lib/quizzes/components/QuizStatusBadge.svelte"
 	import ConfirmActionModal from "$lib/shared/components/ConfirmActionModal.svelte"
@@ -48,6 +50,7 @@
 
 	let showCreateModal = $state(false)
 	let copiedJoinCode = $state<string | null>(null)
+	let quizToEdit = $state<Quiz | null>(null)
 	let quizToDelete = $state<{ id: string; title: string } | null>(null)
 
 	const copyJoinCode = async (joinCode: string) => {
@@ -74,7 +77,7 @@
 	<header>
 		<div class="flex flex-wrap items-start justify-between gap-3">
 			<div>
-				<h3 class="mt-2 mb-0 text-xl text-black">Cuestionarios</h3>
+				<h3 class="sr-only">Cuestionarios</h3>
 				<p class="m-0 mt-2 text-sm text-zinc-700">
 					Programa evaluaciones, monitorea su estado y publica resultados cuando
 					corresponda.
@@ -101,7 +104,7 @@
 		{:else if !quizzesQuery.data?.length}
 			<p class="m-0 text-zinc-600">Aún no existen cuestionarios para este curso.</p>
 		{:else}
-			<div class="grid gap-3 md:hidden">
+			<div class="grid grid-cols-[minmax(0,1fr)] gap-3 md:hidden">
 				{#each quizzesQuery.data as quiz (quiz.id)}
 					<div
 						class="panel-surface flex cursor-pointer flex-col gap-3 p-4"
@@ -147,6 +150,18 @@
 							>
 								<Eye size={15} aria-hidden="true" />
 							</a>
+							<button
+								class="icon-btn cursor-pointer"
+								title="Editar"
+								type="button"
+								onclick={(e) => {
+									e.stopPropagation()
+									quizToEdit = quiz
+								}}
+								disabled={isActionPending}
+							>
+								<Pencil size={15} aria-hidden="true" />
+							</button>
 							{#if !quiz.resultsPublishedAt}
 								<button
 									class="icon-btn cursor-pointer border-amber-300 text-amber-800 hover:bg-amber-50"
@@ -231,6 +246,18 @@
 										>
 											<Eye size={15} aria-hidden="true" /></a
 										>
+										<button
+											class="icon-btn cursor-pointer"
+											title="Editar"
+											type="button"
+											onclick={(e) => {
+												e.stopPropagation()
+												quizToEdit = quiz
+											}}
+											disabled={isActionPending}
+										>
+											<Pencil size={15} aria-hidden="true" /></button
+										>
 										{#if !quiz.resultsPublishedAt}
 											<button
 												class="icon-btn cursor-pointer border-amber-300 text-amber-800 hover:bg-amber-50"
@@ -274,6 +301,16 @@
 		onclose={() => (showCreateModal = false)}
 		onsuccess={() => (showCreateModal = false)}
 	/>
+
+	{#if quizToEdit}
+		{#key quizToEdit.id}
+			<EditQuizModal
+				quiz={quizToEdit}
+				courseId={data.courseId}
+				onclose={() => (quizToEdit = null)}
+			/>
+		{/key}
+	{/if}
 
 	<ConfirmActionModal
 		open={!!quizToDelete}

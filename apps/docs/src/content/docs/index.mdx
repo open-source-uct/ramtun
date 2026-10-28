@@ -1,0 +1,38 @@
+---
+title: Ramtun Docs
+description: Documentación interna de Ramtun para comprender, construir y operar la plataforma.
+template: splash
+hero:
+    title: Ramtun Documentación
+    tagline: Documentación interna para comprender, construir y operar en Ramtun.
+    image:
+        light: ../../assets/logo-light.svg
+        dark: ../../assets/logo-dark.svg
+        alt: "Marca de Ramtun"
+    actions:
+        - text: Empezar
+          link: /empezar/instalacion-y-configuracion/
+          icon: right-arrow
+          variant: primary
+owner: "@equipo-ramtun"
+status: "draft"
+audience: "all"
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components"
+
+<CardGrid>
+	<LinkCard title="Visión general" href="/vision-general/que-es-ramtun/" />
+	<LinkCard title="Empezar" href="/empezar/" />
+	<LinkCard title="Modelo de dominio" href="/dominio/" />
+	<LinkCard title="Base de datos y migraciones" href="/base-de-datos/" />
+	<LinkCard title="Formato de bancos" href="/formato-de-bancos/" />
+	<LinkCard title="Calificación por certeza" href="/calificacion/" />
+	<LinkCard title="Arquitectura" href="/arquitectura/" />
+	<LinkCard title="Backend" href="/backend/" />
+	<LinkCard title="Frontend" href="/frontend/" />
+	<LinkCard title="API" href="/api/" />
+	<LinkCard title="Infraestructura" href="/infraestructura/" />
+	<LinkCard title="Contribuir" href="/contribuir/" />
+	<LinkCard title="Diagramas" href="/diagramas/" />
+</CardGrid>

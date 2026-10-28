@@ -1,7 +1,7 @@
 import { Quiz } from "./entity"
 import { http } from "$lib/shared/http/client"
 
-import type { CreateQuizDTO, QuizDTO } from "$lib/quizzes/dtos"
+import type { CreateQuizDTO, QuizDTO, UpdateQuizDTO } from "$lib/quizzes/dtos"
 
 class QuizzesService {
 	public list(courseId: string): Promise<Quiz[]> {
@@ -17,6 +17,16 @@ class QuizzesService {
 		const quiz = http.request<QuizDTO>({
 			method: "POST",
 			url: "/quizzes",
+			data,
+		})
+
+		return quiz.then((quiz) => Quiz.fromDTO(quiz))
+	}
+
+	public update(quizId: string, data: UpdateQuizDTO): Promise<Quiz> {
+		const quiz = http.request<QuizDTO>({
+			method: "PATCH",
+			url: `/quizzes/${quizId}`,
 			data,
 		})
 

@@ -34,6 +34,20 @@
 	color: var(--ink);
 	background: var(--paper);
 
+	/*
+	 * Los componentes mezclan con estos tokens en vez de `white` / `black`, que solo
+	 * funcionan sobre fondo claro: `lift` aclara bordes y hovers, `wash` es el fondo
+	 * hacia el que se diluyen rellenos y avisos, `shade` oscurece texto y `press` los
+	 * degradados de botones (en oscuro es el propio acento: botones planos).
+	 */
+	--lift: white;
+	--wash: white;
+	--shade: black;
+	--press: black;
+	--focus: rgba(24, 24, 27, 0.12);
+	--focus-field: rgba(24, 24, 27, 0.08);
+	--scrim: rgb(0 0 0 / 0.4);
+
 	--shadow-border:
 		0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 1px 2px -1px rgba(0, 0, 0, 0.06),
 		0px 2px 4px 0px rgba(0, 0, 0, 0.04);
@@ -43,6 +57,88 @@
 	--shadow-modal:
 		0px 0px 0px 1px rgba(0, 0, 0, 0.08), 0px 10px 30px -10px rgba(0, 0, 0, 0.18),
 		0px 4px 10px -4px rgba(0, 0, 0, 0.08);
+}
+
+/* Modo oscuro «Medianoche»: se activa con la clase `dark` en <html> (ver `theme.svelte.ts`). */
+:root.dark {
+	color-scheme: dark;
+
+	--paper: #0d1117;
+	--paper-soft: #131920;
+	--paper-deep: #1b222b;
+	--paper-muted: #161c24;
+	--ink: #e6edf3;
+	--ink-soft: #c9d4df;
+	--ink-muted: #8b98a8;
+	--line: #263040;
+	--line-strong: #364255;
+	--accent: #7aa7ff;
+	--accent-soft: #9bbcff;
+	--highlight: #7aa7ff;
+	--ok: #4ccf93;
+	--warn: #e3b341;
+	--danger: #ff8080;
+
+	--lift: #738196;
+	--wash: var(--paper-deep);
+	--shade: var(--ink);
+	--press: var(--accent);
+	--focus: rgba(122, 167, 255, 0.28);
+	--focus-field: rgba(122, 167, 255, 0.28);
+	--scrim: rgb(0 0 0 / 0.62);
+
+	--shadow-border:
+		0 0 0 1px rgba(148, 170, 200, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.5),
+		0 2px 4px 0 rgba(0, 0, 0, 0.3);
+	--shadow-border-hover:
+		0 0 0 1px rgba(148, 170, 200, 0.18), 0 1px 2px -1px rgba(0, 0, 0, 0.5),
+		0 2px 4px 0 rgba(0, 0, 0, 0.35);
+	--shadow-modal:
+		0 0 0 1px rgba(148, 170, 200, 0.14), 0 18px 40px -12px rgba(0, 0, 0, 0.75),
+		0 4px 10px -4px rgba(0, 0, 0, 0.5);
+
+	/* Los literales de Tailwind (`text-zinc-*`, `text-black`, `bg-red-50`…) se resuelven por estas variables. */
+	--color-zinc-50: #131920;
+	--color-zinc-100: #1b222b;
+	--color-zinc-200: #263040;
+	--color-zinc-300: #364255;
+	--color-zinc-400: #556275;
+	--color-zinc-500: #738196;
+	--color-zinc-600: #8b98a8;
+	--color-zinc-700: #aab6c5;
+	--color-zinc-800: #c9d4df;
+	--color-zinc-900: #e6edf3;
+	--color-black: var(--ink);
+	--color-white: var(--paper-soft);
+
+	--color-red-50: color-mix(in srgb, var(--danger) 14%, var(--paper));
+	--color-red-100: color-mix(in srgb, var(--danger) 20%, var(--paper));
+	--color-red-200: color-mix(in srgb, var(--danger) 40%, var(--paper));
+	--color-red-300: color-mix(in srgb, var(--danger) 50%, var(--paper));
+	--color-red-600: var(--danger);
+	--color-red-700: var(--danger);
+	--color-red-800: var(--danger);
+	--color-red-900: var(--danger);
+	--color-amber-50: color-mix(in srgb, var(--warn) 14%, var(--paper));
+	--color-amber-100: color-mix(in srgb, var(--warn) 20%, var(--paper));
+	--color-amber-300: color-mix(in srgb, var(--warn) 45%, var(--paper));
+	--color-amber-700: var(--warn);
+	--color-amber-800: var(--warn);
+	--color-orange-50: color-mix(in srgb, var(--warn) 14%, var(--paper));
+	--color-orange-100: color-mix(in srgb, var(--warn) 20%, var(--paper));
+	--color-orange-300: color-mix(in srgb, var(--warn) 45%, var(--paper));
+	--color-orange-700: var(--warn);
+	--color-orange-800: var(--warn);
+	--color-yellow-50: color-mix(in srgb, var(--warn) 14%, var(--paper));
+	--color-yellow-300: color-mix(in srgb, var(--warn) 45%, var(--paper));
+	--color-yellow-700: var(--warn);
+	--color-emerald-50: color-mix(in srgb, var(--ok) 14%, var(--paper));
+	--color-emerald-600: var(--ok);
+	--color-emerald-700: var(--ok);
+	--color-emerald-900: var(--ok);
+	--color-blue-50: color-mix(in srgb, var(--highlight) 16%, var(--paper));
+	--color-blue-500: var(--highlight);
+	--color-blue-800: var(--highlight);
 }
 
 html,
@@ -104,7 +200,57 @@ body {
 	select:focus-visible,
 	textarea:focus-visible {
 		outline: none;
-		box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.12);
+		box-shadow: 0 0 0 3px var(--focus);
+	}
+
+	/* Los controles nativos se dibujan con los tokens: en oscuro, el navegador rellena de gris los no
+	 * marcados. `--check` cambia el color marcado (p. ej. verde para la respuesta correcta). */
+	input[type="checkbox"],
+	input[type="radio"] {
+		appearance: none;
+		display: inline-grid;
+		place-content: center;
+		flex-shrink: 0;
+		width: 1rem;
+		height: 1rem;
+		border: 1.5px solid var(--line-strong);
+		border-radius: 3px;
+		background: var(--paper-soft);
+		cursor: pointer;
+	}
+
+	input[type="radio"] {
+		border-radius: 9999px;
+	}
+
+	input[type="checkbox"]:checked,
+	input[type="radio"]:checked {
+		border-color: var(--check, var(--accent));
+		background: var(--check, var(--accent));
+	}
+
+	input[type="checkbox"]:checked::before,
+	input[type="radio"]:checked::before {
+		content: "";
+		background: var(--paper-soft);
+	}
+
+	input[type="radio"]:checked::before {
+		width: 0.375rem;
+		height: 0.375rem;
+		border-radius: 9999px;
+	}
+
+	input[type="checkbox"]:checked::before {
+		width: 0.625rem;
+		height: 0.625rem;
+		clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+	}
+
+	input[type="checkbox"]:disabled,
+	input[type="radio"]:disabled {
+		cursor: not-allowed;
+		opacity: 0.55;
 	}
 }
 
@@ -136,16 +282,10 @@ body {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.sticky-actions {
-		@apply sticky bottom-3 z-10 flex flex-wrap gap-2 rounded-md border p-2.5;
-		border-color: color-mix(in srgb, var(--line) 88%, white);
-		background: color-mix(in srgb, white 90%, var(--paper-soft));
-	}
-
 	.panel-surface {
 		@apply rounded-md;
 		box-shadow: var(--shadow-border);
-		background: color-mix(in srgb, var(--paper-soft) 90%, white);
+		background: color-mix(in srgb, var(--paper-soft) 90%, var(--lift));
 	}
 
 	.panel-elevated {
@@ -154,39 +294,45 @@ body {
 		background:
 			linear-gradient(
 				180deg,
-				color-mix(in srgb, var(--paper-soft) 96%, white) 0%,
+				color-mix(in srgb, var(--paper-soft) 96%, var(--lift)) 0%,
 				color-mix(in srgb, var(--paper-soft) 92%, var(--paper)) 100%
 			),
 			var(--paper-soft);
 	}
 
-	.panel-muted {
+	.panel-muted,
+	.stat-card {
 		@apply rounded-md;
 		box-shadow: var(--shadow-border);
-		background: linear-gradient(180deg, var(--paper-soft) 0%, var(--paper-muted) 100%);
+		background: var(--paper-muted);
 	}
 
 	.input-base {
 		@apply w-full rounded-[4px] border px-3.5 py-2 text-sm leading-6;
-		background: color-mix(in srgb, var(--paper-soft) 90%, white);
+		background: color-mix(in srgb, var(--paper-soft) 90%, var(--lift));
 		color: var(--ink);
 		border-color: var(--line-strong);
 		min-height: 40px;
 	}
 
 	.input-base::placeholder {
-		color: color-mix(in srgb, var(--ink-muted) 82%, white);
+		color: color-mix(in srgb, var(--ink-muted) 82%, var(--lift));
 	}
 
 	.input-base:hover {
-		border-color: color-mix(in srgb, var(--ink-muted) 45%, white);
+		border-color: color-mix(in srgb, var(--ink-muted) 45%, var(--lift));
+	}
+
+	.input-base:disabled {
+		cursor: not-allowed;
+		opacity: 0.55;
 	}
 
 	.input-base:focus-visible {
 		border-color: var(--accent);
 		box-shadow:
 			0 0 0 1px var(--accent),
-			0 0 0 4px rgba(24, 24, 27, 0.08);
+			0 0 0 4px var(--focus-field);
 	}
 
 	.btn-base {
@@ -213,10 +359,10 @@ body {
 
 	.btn-primary {
 		@apply inline-flex items-center justify-center gap-2 rounded-[4px] border px-3.5 py-2.5 text-sm font-medium tracking-[0.01em] text-white;
-		border-color: color-mix(in srgb, var(--accent) 92%, white);
+		border-color: color-mix(in srgb, var(--accent) 92%, var(--lift));
 		background: linear-gradient(
 			180deg,
-			color-mix(in srgb, var(--accent) 88%, black) 0%,
+			color-mix(in srgb, var(--accent) 88%, var(--press)) 0%,
 			var(--accent) 100%
 		);
 		min-height: 40px;
@@ -225,16 +371,16 @@ body {
 	.btn-primary:hover:not(:disabled) {
 		background: linear-gradient(
 			180deg,
-			color-mix(in srgb, var(--accent) 80%, black) 0%,
-			color-mix(in srgb, var(--accent) 92%, black) 100%
+			color-mix(in srgb, var(--accent) 80%, var(--press)) 0%,
+			color-mix(in srgb, var(--accent) 92%, var(--press)) 100%
 		);
 	}
 
 	.btn-secondary {
 		@apply inline-flex items-center justify-center gap-2 rounded-[4px] border px-3.5 py-2.5 text-sm font-medium tracking-[0.01em];
-		background: color-mix(in srgb, var(--paper-soft) 92%, white);
+		background: color-mix(in srgb, var(--paper-soft) 92%, var(--lift));
 		color: var(--ink);
-		border-color: color-mix(in srgb, var(--line-strong) 88%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 88%, var(--lift));
 		min-height: 40px;
 	}
 
@@ -244,15 +390,20 @@ body {
 
 	.btn-tertiary {
 		@apply inline-flex items-center justify-center gap-2 rounded-[4px] border px-3.5 py-2.5 text-sm font-medium tracking-[0.01em];
-		border-color: color-mix(in srgb, var(--line-strong) 70%, white);
-		background: color-mix(in srgb, var(--paper-soft) 92%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 70%, var(--lift));
+		background: color-mix(in srgb, var(--paper-soft) 92%, var(--lift));
 		color: var(--ink-soft);
 		min-height: 40px;
 	}
 
 	.btn-tertiary:hover:not(:disabled) {
 		background: var(--paper-soft);
-		border-color: color-mix(in srgb, var(--line-strong) 90%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 90%, var(--lift));
+	}
+
+	.btn-sm {
+		@apply gap-1.5 px-2.5 py-1 text-[13px];
+		min-height: 32px;
 	}
 
 	.btn-close {
@@ -262,13 +413,13 @@ body {
 	}
 
 	.btn-close:hover {
-		background: color-mix(in srgb, var(--paper-deep) 55%, white);
+		background: color-mix(in srgb, var(--paper-deep) 55%, var(--wash));
 		color: var(--ink);
 	}
 
 	.segmented {
 		@apply inline-flex w-fit items-center gap-0.5 rounded-[4px] p-0.5;
-		background: color-mix(in srgb, var(--paper-deep) 55%, white);
+		background: color-mix(in srgb, var(--paper-deep) 55%, var(--wash));
 	}
 
 	.segmented-item {
@@ -276,10 +427,14 @@ body {
 		color: var(--ink-muted);
 	}
 
+	.segmented-sm .segmented-item {
+		@apply min-h-8 px-2.5 py-1 text-[13px];
+	}
+
 	.segmented-item[data-active="true"] {
-		background: color-mix(in srgb, var(--paper-soft) 92%, white);
+		background: color-mix(in srgb, var(--paper-soft) 92%, var(--lift));
 		color: var(--ink);
-		border-color: color-mix(in srgb, var(--line-strong) 70%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 70%, var(--lift));
 		box-shadow: var(--shadow-border);
 	}
 
@@ -287,8 +442,8 @@ body {
 		@apply inline-flex items-center gap-2 rounded-[4px] border px-3.5 py-2 text-sm font-medium tracking-[0.005em];
 		position: relative;
 		color: var(--ink-soft);
-		border-color: color-mix(in srgb, var(--line-strong) 85%, white);
-		background: color-mix(in srgb, white 88%, var(--paper-soft));
+		border-color: color-mix(in srgb, var(--line-strong) 85%, var(--lift));
+		background: color-mix(in srgb, var(--wash) 88%, var(--paper-soft));
 		min-height: 40px;
 		transition:
 			background-color 180ms ease,
@@ -297,43 +452,56 @@ body {
 
 	.action-tab[data-active="true"] {
 		color: var(--ink);
-		background: color-mix(in srgb, white 88%, var(--paper-soft));
+		background: color-mix(in srgb, var(--wash) 88%, var(--paper-soft));
 		box-shadow: inset 0 -2px 0 0 var(--accent);
 		border-bottom-color: transparent;
 	}
 
 	.action-tab:hover:not([data-active="true"]) {
-		background: color-mix(in srgb, #d5d5d5 10%, white);
-		border-color: color-mix(in srgb, #a5a5a5 38%, white);
+		background: color-mix(in srgb, #d5d5d5 10%, var(--wash));
+		border-color: color-mix(in srgb, #a5a5a5 38%, var(--lift));
+	}
+
+	/* Navegación de texto con subrayado: la sección activa se marca sin caja ni borde. */
+	.text-tab {
+		@apply inline-flex shrink-0 items-center gap-2 py-2.5 text-base whitespace-nowrap;
+		color: var(--ink-muted);
+		box-shadow: inset 0 -2px 0 0 transparent;
+		transition:
+			color 150ms ease,
+			box-shadow 150ms ease;
+	}
+
+	.text-tab:hover {
+		color: var(--ink);
+	}
+
+	.text-tab[data-active="true"] {
+		color: var(--ink);
+		box-shadow: inset 0 -2px 0 0 var(--accent);
 	}
 
 	.code-chip {
 		@apply inline-flex items-center rounded-[4px] border px-2.5 py-1 font-mono text-sm;
-		border-color: color-mix(in srgb, var(--line-strong) 92%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 92%, var(--lift));
 		background: var(--paper-soft);
 		color: var(--ink-soft);
 	}
 
 	.btn-chip {
 		@apply inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-[4px] border px-2 py-1 font-mono text-sm;
-		border-color: color-mix(in srgb, var(--line-strong) 88%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 88%, var(--lift));
 		background: var(--paper-soft);
 		color: var(--ink-soft);
 	}
 
 	.btn-chip:hover {
 		background: var(--paper);
-		border-color: color-mix(in srgb, var(--ink-muted) 50%, white);
+		border-color: color-mix(in srgb, var(--ink-muted) 50%, var(--lift));
 	}
 
 	.stat-card {
-		@apply rounded-md p-4;
-		box-shadow: var(--shadow-border);
-		background: linear-gradient(
-			180deg,
-			rgba(255, 255, 255, 0.92) 0%,
-			rgba(247, 246, 242, 0.9) 100%
-		);
+		@apply p-4;
 	}
 
 	.row-hover {
@@ -341,16 +509,16 @@ body {
 	}
 
 	.row-hover:hover {
-		background-color: color-mix(in srgb, var(--paper-deep) 28%, white);
+		background-color: color-mix(in srgb, var(--paper-deep) 28%, var(--wash));
 	}
 
 	.table-head {
-		background: color-mix(in srgb, var(--paper-deep) 55%, white);
+		background: color-mix(in srgb, var(--paper-deep) 55%, var(--wash));
 		color: var(--ink-soft);
 	}
 
 	.table-row {
-		background: color-mix(in srgb, var(--paper-soft) 88%, white);
+		background: color-mix(in srgb, var(--paper-soft) 88%, var(--lift));
 	}
 
 	.table-cell-muted {
@@ -359,29 +527,29 @@ body {
 
 	.icon-btn {
 		@apply inline-flex size-9 items-center justify-center rounded-[4px] border;
-		border-color: color-mix(in srgb, var(--line-strong) 82%, white);
-		background: color-mix(in srgb, var(--paper-soft) 90%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 82%, var(--lift));
+		background: color-mix(in srgb, var(--paper-soft) 90%, var(--lift));
 		color: var(--ink-muted);
 	}
 
 	.icon-btn:hover {
-		border-color: color-mix(in srgb, var(--ink-muted) 55%, white);
-		background: color-mix(in srgb, var(--paper) 82%, white);
+		border-color: color-mix(in srgb, var(--ink-muted) 55%, var(--lift));
+		background: color-mix(in srgb, var(--paper) 82%, var(--lift));
 	}
 
 	.icon-btn-danger {
-		border-color: color-mix(in srgb, #cf5a5a 38%, white);
-		color: #a33333;
+		border-color: color-mix(in srgb, #cf5a5a 38%, var(--wash));
+		color: var(--danger);
 	}
 
 	.icon-btn-danger:hover {
-		border-color: color-mix(in srgb, #a33333 45%, white);
-		background: color-mix(in srgb, #a33333 8%, white);
+		border-color: color-mix(in srgb, #a33333 45%, var(--wash));
+		background: color-mix(in srgb, #a33333 8%, var(--wash));
 	}
 
 	.pill-outline {
 		@apply inline-flex items-center gap-1 rounded-[4px] border px-2 py-1 text-xs;
-		border-color: color-mix(in srgb, var(--line-strong) 86%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 86%, var(--lift));
 		color: var(--ink-muted);
 		background: transparent;
 	}
@@ -393,22 +561,22 @@ body {
 
 	.quiz-option {
 		@apply w-full rounded-[4px] border px-4 py-3 text-left;
-		border-color: color-mix(in srgb, var(--line-strong) 92%, white);
-		background: color-mix(in srgb, var(--paper-soft) 92%, white);
+		border-color: color-mix(in srgb, var(--line-strong) 92%, var(--lift));
+		background: color-mix(in srgb, var(--paper-soft) 92%, var(--lift));
 		color: var(--ink);
 		min-height: 48px;
 	}
 
 	.quiz-option:hover {
-		border-color: color-mix(in srgb, var(--ink-muted) 48%, white);
+		border-color: color-mix(in srgb, var(--ink-muted) 48%, var(--lift));
 	}
 
 	.quiz-option[data-active="true"] {
 		@apply text-white;
-		border-color: color-mix(in srgb, var(--accent) 86%, white);
+		border-color: color-mix(in srgb, var(--accent) 86%, var(--lift));
 		background: linear-gradient(
 			180deg,
-			color-mix(in srgb, var(--accent) 85%, black) 0%,
+			color-mix(in srgb, var(--accent) 85%, var(--press)) 0%,
 			var(--accent) 100%
 		);
 	}
@@ -418,21 +586,21 @@ body {
 	}
 
 	.notice-ok {
-		border-color: color-mix(in srgb, var(--ok) 45%, white);
-		background: color-mix(in srgb, var(--ok) 14%, white);
-		color: color-mix(in srgb, var(--ok) 88%, black);
+		border-color: color-mix(in srgb, var(--ok) 45%, var(--wash));
+		background: color-mix(in srgb, var(--ok) 14%, var(--wash));
+		color: color-mix(in srgb, var(--ok) 88%, var(--shade));
 	}
 
 	.notice-warn {
-		border-color: color-mix(in srgb, var(--warn) 52%, white);
-		background: color-mix(in srgb, var(--warn) 16%, white);
-		color: color-mix(in srgb, var(--warn) 82%, black);
+		border-color: color-mix(in srgb, var(--warn) 52%, var(--wash));
+		background: color-mix(in srgb, var(--warn) 16%, var(--wash));
+		color: color-mix(in srgb, var(--warn) 82%, var(--shade));
 	}
 
 	.notice-danger {
-		border-color: color-mix(in srgb, var(--danger) 50%, white);
-		background: color-mix(in srgb, var(--danger) 15%, white);
-		color: color-mix(in srgb, var(--danger) 85%, black);
+		border-color: color-mix(in srgb, var(--danger) 50%, var(--wash));
+		background: color-mix(in srgb, var(--danger) 15%, var(--wash));
+		color: color-mix(in srgb, var(--danger) 85%, var(--shade));
 	}
 
 	.keyline {
@@ -440,8 +608,8 @@ body {
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			color-mix(in srgb, var(--line-strong) 86%, white) 0%,
-			color-mix(in srgb, var(--line-strong) 86%, white) 100%,
+			color-mix(in srgb, var(--line-strong) 86%, var(--lift)) 0%,
+			color-mix(in srgb, var(--line-strong) 86%, var(--lift)) 100%,
 			transparent 100%
 		);
 	}

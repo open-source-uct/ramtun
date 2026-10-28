@@ -47,7 +47,7 @@
 	<header>
 		<div class="flex flex-wrap items-start justify-between gap-3">
 			<div>
-				<h3 class="mt-2 mb-0 text-xl text-black">Miembros</h3>
+				<h3 class="sr-only">Miembros</h3>
 				<p class="mt-2 mb-0 text-sm text-zinc-700">Agrega o retira participantes.</p>
 			</div>
 			<button

@@ -1,0 +1,46 @@
+---
+import { diagrams } from "../data/diagrams"
+---
+
+<section class="diagram-gallery" aria-label="Galería de diagramas">
+	<p class="diagram-gallery__intro">
+		Diagramas de referencia para consultar la arquitectura y los flujos de Ramtun. Cada tarjeta
+		enlaza a la página donde se explica su contexto.
+	</p>
+
+	<ul class="diagram-gallery__grid">
+		{diagrams.map((diagram) => (
+			<li class="diagram-card">
+				<div class="diagram-card__media">
+					<a
+						class="diagram-card__image-link"
+						href={diagram.image}
+						target="_blank"
+						rel="noreferrer"
+						title="Abrir en tamaño completo"
+						aria-label={`Abrir ${diagram.title} en tamaño completo`}
+					>
+						<img
+							src={diagram.image}
+							alt={`Diagrama: ${diagram.title}`}
+							width={diagram.width}
+							height={diagram.height}
+							loading="lazy"
+							decoding="async"
+						/>
+					</a>
+				</div>
+
+				<div class="diagram-card__body">
+					<h2 class="diagram-card__title">
+						<a href={diagram.href}>{diagram.title}</a>
+					</h2>
+					<p class="diagram-card__description">{diagram.description}</p>
+					<a class="diagram-card__context" href={diagram.href}>
+						Ver en contexto <span aria-hidden="true">→</span>
+					</a>
+				</div>
+			</li>
+		))}
+	</ul>
+</section>

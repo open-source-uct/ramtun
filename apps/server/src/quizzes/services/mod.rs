@@ -6,6 +6,7 @@ pub use policy::*;
 
 use std::sync::Arc;
 
+use crate::attempts::AttemptRepository;
 use crate::banks::{QuestionBankRepository, QuestionRepository};
 use crate::courses::{CourseId, CourseRepository, CoursesError};
 use crate::quizzes::*;
@@ -24,6 +25,7 @@ pub struct QuizService {
 	tx: Arc<TransactionManager>,
 	banks: Arc<QuestionBankRepository>,
 	questions: Arc<QuestionRepository>,
+	attempts: Arc<AttemptRepository>,
 }
 
 impl QuizService {
@@ -125,14 +127,9 @@ impl QuizService {
 			.map_err(|_| QuizError::InvalidStartTime)?
 			.with_timezone(&Utc);
 
-		let max_score = match input.kind {
-			QuizKind::Traditional => input.question_count,
-			QuizKind::Certainty => input
-				.certainty_config
-				.as_ref()
-				.map(|config| config.high.correct * input.question_count)
-				.unwrap_or(input.question_count),
-		};
+		let certainty_table = input.certainty_config.map(CertaintyTable::from);
+		let max_score =
+			Quiz::compute_max_score(input.kind, input.question_count, certainty_table.as_ref());
 
 		let quiz = Quiz::builder()
 			.course_id(input.course_id)
@@ -140,9 +137,10 @@ impl QuizService {
 			.kind(input.kind)
 			.join_code(self.codegen.generate_unique_join_code().await?)
 			.question_count(input.question_count)
-			.maybe_certainty_table(input.certainty_config.map(CertaintyTable::from))
+			.maybe_certainty_table(certainty_table)
 			.attempt_duration_minutes(input.attempt_duration_minutes)
 			.starts_at(starts_at)
+			.results_multiple_views(input.results_multiple_views)
 			.created_at(Utc::now())
 			.max_score(max_score)
 			.build();
@@ -169,6 +167,96 @@ impl QuizService {
 			.ok_or_else(|| CoursesError::NotFound(quiz.course_id.to_string()))?;
 
 		Ok(QuizView::from((quiz, course)))
+	}
+
+	/// Title and results visibility can change at any time. Anything that
+	/// reshapes the evaluation (schedule, duration, size, scoring) is locked
+	/// once the quiz has attempts or its results are published.
+	pub async fn update(
+		&self,
+		current_user: &User,
+		quiz_id: &QuizId,
+		input: UpdateQuizDto,
+	) -> AppResult<QuizView> {
+		let quiz = self
+			.policy
+			.require_managed_quiz(current_user, quiz_id)
+			.await?;
+
+		let mut updated = quiz.clone();
+
+		if let Some(title) = input.title {
+			updated.title = title;
+		}
+
+		if let Some(multiple_views) = input.results_multiple_views {
+			updated.results_multiple_views = multiple_views;
+		}
+
+		if let Some(starts_at) = &input.starts_at {
+			updated.starts_at = DateTime::parse_from_rfc3339(starts_at)
+				.map_err(|_| QuizError::InvalidStartTime)?
+				.with_timezone(&Utc);
+		}
+
+		if let Some(duration) = input.attempt_duration_minutes {
+			updated.attempt_duration_minutes = duration;
+		}
+
+		if let Some(question_count) = input.question_count {
+			updated.question_count = question_count;
+		}
+
+		if let Some(config) = input.certainty_config {
+			if quiz.kind != QuizKind::Certainty {
+				Err(QuizError::InvalidQuizMode)?;
+			}
+
+			updated.certainty_table = Some(CertaintyTable::from(config));
+		}
+
+		let reshapes_quiz = updated.starts_at != quiz.starts_at
+			|| updated.attempt_duration_minutes != quiz.attempt_duration_minutes
+			|| updated.question_count != quiz.question_count
+			|| updated.certainty_table != quiz.certainty_table;
+
+		if reshapes_quiz {
+			if quiz.results_published_at.is_some()
+				|| self.attempts.exists_for_quiz(&quiz.id).await?
+			{
+				Err(QuizError::LockedForAttempts)?;
+			}
+
+			if updated.starts_at != quiz.starts_at && updated.starts_at < Utc::now() {
+				Err(QuizError::InvalidStartTime)?;
+			}
+
+			if updated.question_count != quiz.question_count {
+				let available = self.questions.list_for_quiz(&quiz.id).await?.len();
+
+				if updated.question_count as usize > available {
+					Err(QuizError::InvalidQuestionCount)?;
+				}
+			}
+
+			updated.max_score = Quiz::compute_max_score(
+				updated.kind,
+				updated.question_count,
+				updated.certainty_table.as_ref(),
+			);
+		}
+
+		let mut tx = self.tx.begin().await?;
+		let saved = self.repository.save(&mut tx, &updated).await?;
+		tx.commit().await?;
+
+		let course = self
+			.courses
+			.find_by_id(&saved.course_id)
+			.await?
+			.ok_or_else(|| CoursesError::NotFound(saved.course_id.to_string()))?;
+
+		Ok(QuizView::from((saved, course)))
 	}
 
 	pub async fn delete_quiz(&self, current_user: &User, quiz_id: &QuizId) -> AppResult<()> {

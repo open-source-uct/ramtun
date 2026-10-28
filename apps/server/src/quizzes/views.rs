@@ -15,6 +15,7 @@ pub struct QuizView {
 	pub attempt_duration_minutes: i16,
 	pub starts_at: DateTime<Utc>,
 	pub results_published_at: Option<DateTime<Utc>>,
+	pub results_multiple_views: bool,
 	pub created_at: DateTime<Utc>,
 
 	pub course: Course,
@@ -32,6 +33,7 @@ impl From<(Quiz, Course)> for QuizView {
 			attempt_duration_minutes: quiz.attempt_duration_minutes,
 			starts_at: quiz.starts_at,
 			results_published_at: quiz.results_published_at,
+			results_multiple_views: quiz.results_multiple_views,
 			created_at: quiz.created_at,
 			course,
 		}

@@ -4,7 +4,7 @@ use crate::quizzes::{Quiz, QuizRepository};
 use crate::shared::{AppResult, TransactionManager, Tx};
 use crate::users::User;
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use std::sync::Arc;
 use sword::prelude::*;
 
@@ -90,7 +90,17 @@ impl QuestionBankService {
 			.questions
 			.iter()
 			.enumerate()
-			.map(|(position, q)| build_question(bank.id, position as i16, now, q))
+			.map(|(position, q)| {
+				Question::builder()
+					.bank_id(bank.id)
+					.position(position as i16)
+					.prompt(q.prompt.clone())
+					.options(q.options.clone())
+					.answer_index(q.answer_index as i16)
+					.maybe_justification(Self::normalize_justification(q.justification.as_deref()))
+					.created_at(now)
+					.build()
+			})
 			.collect::<Vec<_>>();
 
 		self.questions
@@ -125,9 +135,6 @@ impl QuestionBankService {
 		self.repository.save(&mut tx, &bank).await?;
 
 		if let Some(question_inputs) = input.questions {
-			let current = self.questions.list_current_by_bank(&bank.id).await?;
-			self.ensure_editable_payload(&current, &question_inputs)?;
-
 			self.questions
 				.archive_or_purge_generation(&mut tx, &bank.id)
 				.await?;
@@ -138,17 +145,15 @@ impl QuestionBankService {
 				.iter()
 				.enumerate()
 				.map(|(position, q)| {
-					let answer_index = current
-						.get(position)
-						.map(|question| question.answer_index)
-						.unwrap_or(0);
-
 					Question::builder()
 						.bank_id(bank.id)
 						.position(position as i16)
 						.prompt(q.prompt.clone())
 						.options(q.options.clone())
-						.answer_index(answer_index)
+						.answer_index(q.answer_index as i16)
+						.maybe_justification(Self::normalize_justification(
+							q.justification.as_deref(),
+						))
 						.created_at(now)
 						.build()
 				})
@@ -252,25 +257,13 @@ impl QuestionBankService {
 		Err(QuestionBankError::InvalidQuestionCountAfterBankUpdate)?
 	}
 
-	/// Editing only changes prompt and option texts, so the number of questions
-	/// and the number of options of each question must stay unchanged. The
-	/// correct answer is preserved server-side by position.
-	fn ensure_editable_payload(
-		&self,
-		current: &[Question],
-		incoming: &[UpdateQuestionInput],
-	) -> AppResult<()> {
-		if current.len() != incoming.len() {
-			Err(QuestionBankError::QuestionCountMismatch)?;
-		}
-
-		for (index, question) in incoming.iter().enumerate() {
-			if current[index].options.len() != question.options.len() {
-				Err(QuestionBankError::OptionsCountMismatch)?;
-			}
-		}
-
-		Ok(())
+	/// Trims the justification and stores `None` when nothing is left, so blank
+	/// explanations are treated as absent.
+	fn normalize_justification(justification: Option<&str>) -> Option<String> {
+		justification
+			.map(str::trim)
+			.filter(|text| !text.is_empty())
+			.map(str::to_owned)
 	}
 
 	fn ensure_not_linked_to_running_quiz(&self, quizzes: &[Quiz]) -> AppResult<()> {
@@ -287,18 +280,19 @@ impl QuestionBankService {
 	}
 }
 
-fn build_question(
-	bank_id: QuestionBankId,
-	position: i16,
-	created_at: DateTime<Utc>,
-	input: &QuestionInput,
-) -> Question {
-	Question::builder()
-		.bank_id(bank_id)
-		.position(position)
-		.prompt(input.prompt.clone())
-		.options(input.options.clone())
-		.answer_index(input.answer_index as i16)
-		.created_at(created_at)
-		.build()
+#[cfg(test)]
+mod tests {
+	use super::QuestionBankService;
+
+	#[test]
+	fn normalize_justification_drops_blank_and_trims_text() {
+		let normalize = QuestionBankService::normalize_justification;
+
+		assert_eq!(normalize(Some("   ")), None);
+		assert_eq!(normalize(None), None);
+		assert_eq!(
+			normalize(Some("  Porque $x = 2$  ")),
+			Some("Porque $x = 2$".to_owned())
+		);
+	}
 }

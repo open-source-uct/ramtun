@@ -14,6 +14,7 @@ export interface QuizDTO {
 	attemptDurationMinutes: number
 	startsAt: string
 	resultsPublishedAt: string | null
+	resultsMultipleViews: boolean
 	createdAt: string
 	course: Omit<CourseDTO, "members">
 }
@@ -43,8 +44,8 @@ export const createQuizDTOSchema = v.object({
 	title: v.pipe(
 		v.string(),
 		v.trim(),
-		v.minLength(1, "El titulo es obligatorio."),
-		v.maxLength(100, "Maximo 100 caracteres.")
+		v.minLength(1, "El título es obligatorio."),
+		v.maxLength(100, "Máximo 100 caracteres.")
 	),
 	kind: quizKindDTOSchema,
 	startsAt: v.pipe(
@@ -58,21 +59,34 @@ export const createQuizDTOSchema = v.object({
 	attemptDurationMinutes: v.pipe(
 		v.string(),
 		v.toNumber(),
-		v.minValue(1, "Minimo 1 minuto."),
-		v.maxValue(240, "Maximo 240 minutos.")
+		v.minValue(1, "Mínimo 1 minuto."),
+		v.maxValue(240, "Máximo 240 minutos.")
 	),
 	questionCount: v.pipe(
 		v.string(),
 		v.toNumber(),
-		v.minValue(1, "Minimo 1 pregunta."),
-		v.maxValue(100, "Maximo 100 preguntas.")
+		v.minValue(1, "Mínimo 1 pregunta."),
+		v.maxValue(100, "Máximo 100 preguntas.")
 	),
 	bankIds: v.pipe(v.array(v.string()), v.minLength(1, "Selecciona al menos un banco.")),
 	certaintyConfig: v.nullable(certaintyTableDTOSchema),
+	resultsMultipleViews: v.boolean(),
 })
 
 export type CreateQuizDTOSchema = typeof createQuizDTOSchema
 export type CreateQuizDTO = v.InferOutput<typeof createQuizDTOSchema>
+
+// Update Quiz DTO ------------------------------------------------------
+
+/** Solo viajan los campos que cambiaron: el servidor bloquea los estructurales si ya hay intentos. */
+export type UpdateQuizDTO = {
+	title?: string
+	startsAt?: string
+	attemptDurationMinutes?: number
+	questionCount?: number
+	certaintyConfig?: CertaintyTableDTO
+	resultsMultipleViews?: boolean
+}
 
 // Join Quiz DTO ------------------------------------------------------
 

@@ -31,13 +31,26 @@
   "attemptDurationMinutes": 30,
   "questionCount": 10,
   "bankIds": ["uuid"],
-  "certaintyConfig": null
+  "certaintyConfig": null,
+  "resultsMultipleViews": false
 }
 ```
 
 - Notes:
   - `kind=certainty` requires `certaintyConfig`.
   - `kind=traditional` must not include `certaintyConfig`.
+  - `resultsMultipleViews` (optional, default `false`): lets students reopen their results; otherwise they can view them once.
+- Response `data`: `QuizView`
+
+## PATCH `/quizzes/{quizId}`
+- Summary: Edit a quiz. The kind and its banks are fixed at creation.
+- Auth: Bearer token required.
+- Roles (AuthzAction::QuizUpdateManaged): `admin`, `func`, `student`.
+- Path params:
+  - `quizId: uuid`
+- Body (at least one field):
+  - `title` (1–100), `resultsMultipleViews`: always editable, even with attempts or published results.
+  - `startsAt` (RFC3339, must be in the future), `attemptDurationMinutes` (1–240), `questionCount` (1–100, at most the questions available from the linked banks), `certaintyConfig` (certainty quizzes only): editable only while the quiz has no attempts and its results are not published. `maxScore` is recomputed when any of them changes.
 - Response `data`: `QuizView`
 
 ## DELETE `/quizzes/{quizId}`
@@ -67,11 +80,11 @@
   - `{ quizId, title, kind, questionCount, certaintyTable, attemptDurationMinutes, startsAt }`
 
 ## Output Shape: `QuizView`
-- `{ id, title, kind, joinCode, questionCount, certaintyTable, attemptDurationMinutes, startsAt, resultsPublishedAt, createdAt, course }`
+- `{ id, title, kind, joinCode, questionCount, certaintyTable, attemptDurationMinutes, startsAt, resultsPublishedAt, resultsMultipleViews, createdAt, course }`
 - `course` is embedded course entity data.
 
 ## Common Domain Errors
 - `404`: quiz not found.
 - `403`: forbidden quiz access.
-- `400`: invalid create payload or mode mismatch.
+- `400`: invalid create/update payload, past start time, or mode mismatch.
 - `409`: quiz closed or locked by existing attempts.

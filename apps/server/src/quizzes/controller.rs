@@ -51,6 +51,18 @@ impl QuizController {
 		Ok(JsonResponse::Created().data(quiz))
 	}
 
+	#[patch("/{quizId}")]
+	#[interceptor(AuthzGuard, config = AuthzAction::QuizUpdateManaged)]
+	pub async fn update(&self, req: Request) -> WebResult {
+		let quiz_id = req.param::<QuizId>("quizId")?;
+		let input = req.body_validator::<UpdateQuizDto>()?;
+		let current_user = req.user().ok_or_else(JsonResponse::Unauthorized)?;
+
+		let quiz = self.service.update(current_user, &quiz_id, input).await?;
+
+		Ok(JsonResponse::Ok().data(quiz))
+	}
+
 	#[delete("/{quizId}")]
 	#[interceptor(AuthzGuard, config = AuthzAction::QuizDeleteManaged)]
 	pub async fn delete(&self, req: Request) -> WebResult {

@@ -11,7 +11,7 @@
 	import { toast } from "svelte-sonner"
 	import { Upload, Code, X } from "lucide-svelte"
 	import { bankQuestionsSchema } from "$lib/banks/banks.dtos"
-	import { createForm, Field, Form, reset, setInput } from "@formisch/svelte"
+	import { createForm, Field, Form, getInput, reset, setInput } from "@formisch/svelte"
 	import { inlineTryAsync } from "$lib/shared/try"
 	import { fileNameWithoutExtension, parseBankMarkdown } from "$lib/banks/markdown"
 
@@ -60,6 +60,8 @@ print("hola")
 - [ ] Londres
 - [ ] Berlín
 
+La capital de Francia es París desde hace siglos.
+
 ### ¿Cuánto es 2 + 2?
 - [X] 4
 - [ ] 3
@@ -67,6 +69,7 @@ print("hola")
 
 	const handleFileChange = async (e: Event) => {
 		const file = (e.target as HTMLInputElement).files?.[0] ?? null
+		const replacesFile = selectedFile !== null
 		selectedFile = file
 		fileError = null
 		parsedQuestions = []
@@ -90,7 +93,10 @@ print("hola")
 		}
 
 		parsedQuestions = result.output
-		setInput(form, { path: ["name"], input: parsed.name })
+		// El archivo propone el nombre; un nombre escrito antes del primer archivo se respeta.
+		if (replacesFile || !getInput(form, { path: ["name"] })) {
+			setInput(form, { path: ["name"], input: parsed.name })
+		}
 	}
 
 	const handleSubmit: SubmitEventHandler<typeof bankUploadFormSchema> = async (output) => {
@@ -122,7 +128,7 @@ print("hola")
 
 {#if open}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-(--scrim) p-4"
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -189,9 +195,9 @@ print("hola")
 								{/if}
 							</div>
 
-							<div class="sticky-actions mt-">
+							<div class="flex gap-2">
 								<button
-									class="btn-primary flex w-full items-center gap-1.5 sm:w-auto"
+									class="btn-primary flex-1 gap-1.5"
 									type="submit"
 									disabled={mutation.isPending || !selectedFile || !!fileError}
 								>
@@ -199,7 +205,7 @@ print("hola")
 									{mutation.isPending ? "Subiendo..." : "Subir banco"}
 								</button>
 								<button
-									class="btn-secondary flex w-full items-center gap-1.5 sm:w-auto"
+									class="btn-secondary flex-1 gap-1.5"
 									type="button"
 									onclick={() => (showFormatModal = true)}
 								>
@@ -217,7 +223,7 @@ print("hola")
 
 {#if showFormatModal}
 	<div
-		class="fixed inset-0 z-60 flex items-center justify-center bg-black/40 p-4"
+		class="fixed inset-0 z-60 flex items-center justify-center bg-(--scrim) p-4"
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -253,6 +259,10 @@ print("hola")
 					<code class="text-zinc-900">- [X]</code> marca la opción correcta y
 					<code class="text-zinc-900">- [ ]</code> las demás. Debe haber exactamente una correcta
 					y entre 2 y 5 opciones
+				</li>
+				<li>
+					Texto después de la última opción: justificación opcional que el estudiante
+					ve al revisar sus resultados (soporta Markdown y LaTeX)
 				</li>
 			</ul>
 

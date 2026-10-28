@@ -16,7 +16,8 @@ export class Quiz {
 		public startsAt: DateValue,
 		public resultsPublishedAt: DateValue | null,
 		public createdAt: DateValue,
-		public course: Omit<CourseDTO, "members">
+		public course: Omit<CourseDTO, "members">,
+		public resultsMultipleViews: boolean
 	) {}
 
 	static fromDTO(dto: QuizDTO): Quiz {
@@ -46,7 +47,8 @@ export class Quiz {
 			startsAt,
 			resultsPublishedAt,
 			createdAt,
-			dto.course
+			dto.course,
+			dto.resultsMultipleViews
 		)
 	}
 

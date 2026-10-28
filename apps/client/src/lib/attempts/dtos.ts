@@ -55,6 +55,7 @@ export type QuestionResult = {
 	answerIndex: number | null
 	correctAnswerIndex: number
 	certaintyLevel: CertaintyLevel | null
+	justification: string | null
 	isCorrect: boolean
 	awardedPoints: number
 }

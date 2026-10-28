@@ -5,9 +5,11 @@
 		onclick: () => void
 	}
 
+	import Markdown from "$lib/shared/components/Markdown.svelte"
+
 	let { text, isSelected, onclick }: QuizOptionProps = $props()
 </script>
 
 <button type="button" class="quiz-option" data-active={isSelected} {onclick}>
-	{text}
+	<Markdown content={text} inline />
 </button>

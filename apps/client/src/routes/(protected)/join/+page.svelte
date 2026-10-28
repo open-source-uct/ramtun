@@ -31,11 +31,10 @@
 	}
 </script>
 
-<section class="flex flex-col gap-4">
-	<div>
-		<p class="m-0 text-xs font-semibold tracking-widest text-zinc-500">Acceso rápido</p>
-		<h2 class="mt-0.5 mb-0 text-2xl tracking-tight text-black">Unirse a un cuestionario</h2>
-	</div>
+<section class="grid gap-5">
+	<header>
+		<h2 class="mt-2 mb-0 text-2xl text-black">Unirse a un cuestionario</h2>
+	</header>
 
 	<section>
 		<Form of={form} onsubmit={handleSubmit}>

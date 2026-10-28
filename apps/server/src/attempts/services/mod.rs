@@ -368,7 +368,7 @@ impl AttemptsService {
 			.await?
 			.ok_or(AttemptError::NoActiveAttempts)?;
 
-		if attempt.results_viewed_at.is_some() {
+		if attempt.results_viewed_at.is_some() && !quiz.results_multiple_views {
 			Err(AttemptError::ResultsAlreadyViewed)?;
 		}
 
@@ -495,6 +495,7 @@ impl AttemptsService {
 				options: question.options.clone(),
 				answer_index,
 				correct_answer_index: question.answer_index,
+				justification: question.justification.clone(),
 				certainty_level,
 				is_correct,
 				awarded_points,

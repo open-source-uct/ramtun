@@ -8,6 +8,8 @@ export RUST_VERSION
 
 SERVER=apps/server
 CLIENT=apps/client
+DOCS=apps/docs
+PNPM ?= pnpm
 app ?= "server"
 pkg ?=
 service ?= $(app)
@@ -17,7 +19,7 @@ args ?=
 docker_tty ?= -it
 
 .DEFAULT_GOAL := run
-.PHONY: run detach clean fmt lint migration machete clean-db db npmi npmu npmci setup deployer down
+.PHONY: run detach clean fmt lint migration machete clean-db db npmi npmu npmci setup deployer down spell docs docs-check docs-build docs-fmt
 
 setup:
 	rm -rf $(CLIENT)/node_modules
@@ -53,6 +55,9 @@ lint:
 	cd $(CLIENT) && corepack pnpm run lint
 	cd $(CLIENT) && corepack pnpm run check
 
+spell:
+	corepack pnpm --package=cspell --package=@cspell/dict-es-es dlx cspell lint --no-progress "$(CLIENT)/src/**/*.{svelte,ts,css}"
+
 migration:
 	cd $(SERVER) && sqlx migrate add --source ./config/migrations "$(name)"
 
@@ -77,3 +82,15 @@ deployer:
 
 seed:
 	cargo run -p server --bin seeder
+
+docs:
+	cd $(DOCS) && $(PNPM) install && $(PNPM) dev
+
+docs-check:
+	cd $(DOCS) && $(PNPM) check
+
+docs-build:
+	cd $(DOCS) && $(PNPM) build
+
+docs-fmt:
+	cd $(DOCS) && $(PNPM) format

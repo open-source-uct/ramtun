@@ -34,18 +34,4 @@ pub enum QuestionBankError {
 	)]
 	#[error("Invalid question count after bank update")]
 	InvalidQuestionCountAfterBankUpdate,
-
-	#[http(
-		code = 400,
-		message = "La cantidad de preguntas no puede cambiar al editar el banco."
-	)]
-	#[error("Question count cannot change when editing a bank")]
-	QuestionCountMismatch,
-
-	#[http(
-		code = 400,
-		message = "La cantidad de opciones de una pregunta no puede cambiar al editar el banco."
-	)]
-	#[error("Option count cannot change when editing a bank")]
-	OptionsCountMismatch,
 }

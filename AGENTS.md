@@ -2,6 +2,7 @@
 
 ## Repo Shape
 - Not a JS/Rust monorepo: the Rust workspace only contains `apps/server`; the frontend is a standalone pnpm project in `apps/client` with its own lockfile.
+- The documentation site is a standalone Astro Starlight project in `apps/docs` with its own lockfile and no backend dependency.
 - Backend entrypoint: `apps/server/src/main.rs` — wires modules via `sword::Application`: `auth`, `authz`, `banks`, `courses`, `users`, `quizzes`, `snapshots`, `shared`, `attempts`.
 - Frontend shell: `apps/client/src/routes/+layout.svelte` — installs TanStack Query provider and Axios interceptors. SSR is disabled in `+layout.ts`.
 - Real-time: Socket.IO server at `/attempts` namespace (events: `attempts:new-submit`, `attempts:new-attempt`, `attempts:warning`). Client in `apps/client/src/lib/shared/socket/attempts.socket.ts`.
@@ -12,6 +13,7 @@
 - Repo-wide formatting/lint: `make fmt` / `make lint` (runs both backend and frontend).
 - Focused backend from root: `cargo fmt --all`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`, `cargo test -p server`.
 - Focused frontend from `apps/client`: `corepack pnpm run lint`, `corepack pnpm run check`, `corepack pnpm run build`.
+- Focused docs from `apps/docs`: `pnpm dev`, `pnpm check`, `pnpm build`, `pnpm format`; from root, `make docs`, `make docs-check`, `make docs-build`, `make docs-fmt`.
 - CI does not run frontend tests (none exist). Client CI: `lint` + `check`. Server CI: `fmt --check` + `clippy` + `test`.
 - DB migration: `make migration name=<name>` (runs `sqlx migrate add`). `make clean-db` drops and recreates the public schema (destructive).
 - `make machete` checks for unused Rust dependencies.
@@ -31,6 +33,7 @@
 - Auth/session: `apps/client/src/lib/auth/service.ts` and `apps/client/src/lib/shared/http/api.interceptors.ts`. Protected-route redirect: `apps/client/src/routes/(protected)/+layout.ts`.
 - Anti-cheat system: `apps/client/src/lib/attempts/services/anti-cheat.service.svelte.ts` — blocks context menu, copy, search, screenshot, alt-tab. Warnings broadcast via Socket.IO.
 - API docs: `.docs/endpoints/` contains per-resource markdown docs (auth, users, courses, banks, quizzes, attempts).
+- Documentation site: content in `apps/docs/src/content/docs/`, diagram gallery data in `apps/docs/src/data/diagrams.ts`.
 
 ## Style Notes
 - Frontend formatting from root `.prettierrc`: tabs, no semicolons, `printWidth: 100`, double quotes, Tailwind class sorting via `prettier-plugin-tailwindcss` using `apps/client/src/routes/layout.css`.

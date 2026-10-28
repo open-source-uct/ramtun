@@ -8,6 +8,7 @@
 	import { Play, TimerReset } from "lucide-svelte"
 	import { useQuery, useMutation, useQueryClient } from "$lib/shared/http/tanstack"
 
+	import Title from "$lib/shared/components/Title.svelte"
 	import CertaintyTableView from "$lib/quizzes/components/CertaintyTableView.svelte"
 
 	const joinCode = $derived.by(() => page.url.searchParams.get("joinCode") ?? "")
@@ -83,20 +84,10 @@
 </script>
 
 <section class="flex flex-col gap-4 py-4">
-	<div>
-		<p class="m-0 text-xs font-semibold tracking-widest text-zinc-500">
-			Unirse a un cuestionario
-		</p>
-		{#if previewQuery.data}
-			<h2 class="mt-0.5 mb-0 text-2xl tracking-tight text-black">
-				{previewQuery.data.title}
-			</h2>
-		{:else}
-			<h2 class="mt-0.5 mb-0 text-2xl tracking-tight text-black">
-				Sala de espera del cuestionario
-			</h2>
-		{/if}
-	</div>
+	<Title supra="Unirse a un cuestionario" size="page" tag="h2">
+		{previewQuery.data?.title ?? "Sala de espera del cuestionario"}
+	</Title>
+	<div class="keyline"></div>
 
 	{#if previewQuery.isLoading}
 		<p class="m-0 text-zinc-600">Cargando información del cuestionario...</p>
@@ -105,70 +96,63 @@
 			{previewQuery.error?.messageOrDefault ?? ""}
 		</p>
 	{:else if previewQuery.data}
-		<section class="flex flex-col gap-3">
-			<div class="grid gap-2 sm:grid-cols-3">
-				<div class="panel-muted p-3">
-					<p class="m-0 text-xs text-zinc-600">Tipo</p>
-					<p class="mt-1 mb-0 text-lg font-semibold text-black">
-						{previewQuery.data.kind.toDisplay()}
-					</p>
-				</div>
-				<div class="panel-muted p-3">
-					<p class="m-0 text-xs text-zinc-600">Preguntas</p>
-					<p class="mt-1 mb-0 text-lg font-semibold text-black">
-						{previewQuery.data.questionCount}
-					</p>
-				</div>
-				<div class="panel-muted p-3">
-					<p class="m-0 text-xs text-zinc-600">Duración</p>
-					<p class="mt-1 mb-0 text-lg font-semibold text-black">
-						{previewQuery.data.attemptDurationMinutes} min
-					</p>
-				</div>
+		<div class="grid grid-cols-3 gap-2">
+			<div class="stat-card">
+				<p class="m-0 text-xs text-zinc-600">Tipo</p>
+				<p class="mt-1 mb-0 text-sm font-semibold text-black sm:text-lg">
+					{previewQuery.data.kind.toDisplay()}
+				</p>
+			</div>
+			<div class="stat-card">
+				<p class="m-0 text-xs text-zinc-600">Preguntas</p>
+				<p class="mt-1 mb-0 text-sm font-semibold text-black sm:text-lg">
+					{previewQuery.data.questionCount}
+				</p>
+			</div>
+			<div class="stat-card">
+				<p class="m-0 text-xs text-zinc-600">Duración</p>
+				<p class="mt-1 mb-0 text-sm font-semibold text-black sm:text-lg">
+					{previewQuery.data.attemptDurationMinutes} min
+				</p>
+			</div>
+		</div>
+
+		<div class={hasCertaintyTable ? "grid gap-6 lg:grid-cols-2" : "grid"}>
+			<div class="flex flex-col gap-1 text-sm leading-relaxed text-zinc-700">
+				<p class="m-0 mb-1 font-medium text-black">Antes de comenzar</p>
+				<p class="m-0">Inicio programado: {previewQuery.data.startsAt.toDisplay()}</p>
+				<p class="m-0">
+					Solo tienes un intento. Se entrega automáticamente al agotarse el tiempo.
+				</p>
 			</div>
 
-			<div class={hasCertaintyTable ? "grid gap-3 lg:grid-cols-2" : "grid"}>
-				<div class="panel-muted space-y-1 p-3 text-sm leading-relaxed text-zinc-700">
-					<p class="m-0 text-sm font-medium text-black">Antes de comenzar</p>
-					<p class="m-0">
-						Inicio programado: {previewQuery.data.startsAt.toDisplay()}
-					</p>
-					<p class="m-0">
-						Solo tienes un intento. Se entrega automáticamente al agotarse el tiempo.
-					</p>
+			{#if hasCertaintyTable}
+				<div class="flex flex-col gap-2">
+					<p class="m-0 text-sm font-medium text-black">Tabla de certeza</p>
+					<CertaintyTableView table={previewQuery.data.certaintyTable!} />
 				</div>
+			{/if}
+		</div>
 
-				{#if hasCertaintyTable}
-					<div class="panel-muted p-3">
-						<p class="m-0 mb-2 text-sm font-medium text-black">Tabla de certeza</p>
-						<div class="overflow-x-auto">
-							<CertaintyTableView table={previewQuery.data.certaintyTable!} />
-						</div>
-					</div>
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<a class="action-tab justify-center" href={resolve("/join")}>
+				<TimerReset size={16} /> Cambiar código
+			</a>
+			<button
+				class="btn-primary flex items-center gap-1.5"
+				type="button"
+				onclick={() => initializeAttemptMutation.mutate()}
+				disabled={initializeAttemptMutation.isPending || isPreAttemptWait}
+			>
+				<Play size={16} aria-hidden="true" />
+				{#if initializeAttemptMutation.isPending}
+					Iniciando...
+				{:else if isPreAttemptWait}
+					Comienza en {preAttemptTimerLabel}
+				{:else}
+					Comenzar intento
 				{/if}
-			</div>
-
-			<div class="mb-4 h-px bg-zinc-400/70"></div>
-			<div class="flex flex-wrap items-center justify-between gap-3">
-				<a class="action-tab justify-center" href={resolve("/join")}>
-					<TimerReset size={16} /> Cambiar código
-				</a>
-				<button
-					class="btn-primary"
-					type="button"
-					onclick={() => initializeAttemptMutation.mutate()}
-					disabled={initializeAttemptMutation.isPending || isPreAttemptWait}
-				>
-					<Play size={14} class="mr-1 inline" />
-					{#if initializeAttemptMutation.isPending}
-						Iniciando...
-					{:else if isPreAttemptWait}
-						Comienza en {preAttemptTimerLabel}
-					{:else}
-						Comenzar intento
-					{/if}
-				</button>
-			</div>
-		</section>
+			</button>
+		</div>
 	{/if}
 </section>

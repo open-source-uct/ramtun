@@ -1,0 +1,20 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro"
+---
+
+<StarlightPage
+	frontmatter={{
+		title: "Página no encontrada",
+		description:
+			"La página solicitada no existe o cambió de ubicación dentro de la documentación.",
+		template: "splash",
+		hero: {
+			tagline: "La página que buscas no existe o cambió de ubicación.",
+		},
+		editUrl: false,
+		pagefind: false,
+		owner: "@equipo-ramtun",
+		status: "stable",
+		audience: "all",
+	}}
+/>

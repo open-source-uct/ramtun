@@ -1,0 +1,189 @@
+.diagram-gallery {
+	margin-top: 0.5rem;
+}
+
+.sl-markdown-content:not(:has(*))::before {
+	display: block;
+	padding: 1.5rem;
+	border: 1px dashed var(--sl-color-hairline-shade);
+	border-radius: 0.75rem;
+	background: var(--sl-color-gray-7);
+	color: var(--sl-color-gray-3);
+	font-size: 0.9rem;
+	text-align: center;
+	content: "Contenido pendiente";
+}
+
+.diagram-gallery__intro {
+	max-width: 62ch;
+	margin-bottom: 1.75rem;
+	color: var(--sl-color-gray-2);
+}
+
+.diagram-gallery__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+	gap: 1rem;
+	align-items: stretch;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.diagram-card {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid var(--sl-color-hairline);
+	border-radius: 0.9rem;
+	background: var(--sl-color-bg-nav);
+	transition:
+		border-color 160ms ease,
+		transform 160ms ease,
+		box-shadow 160ms ease;
+}
+
+.diagram-card:hover {
+	border-color: var(--sl-color-accent);
+	transform: translateY(-2px);
+	box-shadow: 0 18px 34px -26px var(--sl-color-black);
+}
+
+.diagram-card__media {
+	position: relative;
+	display: grid;
+	place-items: center;
+	aspect-ratio: 16 / 10;
+	padding: 0.75rem;
+	border-bottom: 1px solid var(--sl-color-hairline);
+	background:
+		linear-gradient(
+			135deg,
+			transparent 49.5%,
+			var(--sl-color-hairline-light) 50%,
+			transparent 50.5%
+		),
+		var(--sl-color-gray-7);
+	background-size:
+		14px 14px,
+		auto;
+}
+
+.diagram-card__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	border-radius: 0.35rem;
+}
+
+.diagram-card__image-link {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	cursor: zoom-in;
+}
+
+.diagram-card__image-link:hover img {
+	filter: brightness(0.96);
+}
+
+.diagram-card__placeholder {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	border: 1px dashed var(--sl-color-hairline-shade);
+	border-radius: 0.55rem;
+	color: var(--sl-color-gray-3);
+	font-size: 0.74rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.diagram-card__placeholder-mark {
+	font-family: var(--sl-font-mono);
+	font-size: 1.5rem;
+	line-height: 1;
+	color: var(--sl-color-accent);
+}
+
+.diagram-card__badge {
+	position: absolute;
+	top: 0.55rem;
+	right: 0.55rem;
+	padding: 0.16rem 0.45rem;
+	border: 1px solid var(--sl-color-hairline);
+	border-radius: 999px;
+	background: var(--sl-color-bg);
+	color: var(--sl-color-gray-3);
+	font-size: 0.62rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.diagram-card[data-status="ready"] .diagram-card__badge {
+	border-color: var(--sl-color-accent);
+	color: var(--sl-color-text-accent);
+}
+
+.diagram-card__body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 0.45rem;
+	padding: 1rem;
+}
+
+.diagram-card__kind {
+	color: var(--sl-color-text-accent);
+	font-size: 0.66rem;
+	font-weight: 700;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+}
+
+.diagram-card__title {
+	margin: 0;
+	font-size: 1.05rem;
+	line-height: 1.3;
+}
+
+.diagram-card__title a {
+	color: var(--sl-color-white);
+	text-decoration: none;
+}
+
+.diagram-card__title a:hover {
+	color: var(--sl-color-text-accent);
+}
+
+.diagram-card__description {
+	margin: 0;
+	color: var(--sl-color-gray-2);
+	font-size: 0.88rem;
+	line-height: 1.55;
+}
+
+.diagram-card__context {
+	margin-top: auto;
+	padding-top: 0.55rem;
+	color: var(--sl-color-text-accent);
+	font-size: 0.82rem;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.diagram-card__context:hover {
+	text-decoration: underline;
+}
+
+@media (max-width: 30rem) {
+	.diagram-gallery__grid {
+		grid-template-columns: 1fr;
+	}
+}

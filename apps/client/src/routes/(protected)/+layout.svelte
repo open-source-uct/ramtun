@@ -14,6 +14,7 @@
 		disconnectAttemptsSocket,
 	} from "$lib/shared/socket/attempts.socket"
 	import { attemptsService } from "$lib/attempts/service"
+	import ThemeToggle from "$lib/shared/components/ThemeToggle.svelte"
 
 	let { data, children }: LayoutProps = $props()
 
@@ -72,66 +73,68 @@
 </script>
 
 <main class="mx-auto flex min-h-dvh max-w-312 flex-col gap-2 p-3 sm:p-4 lg:p-6">
-	<header class="panel-elevated mx-auto w-full p-3 sm:p-4">
-		<div class="flex items-center justify-between gap-4 px-8">
-			<div>
-				<p class="m-0 text-xs font-semibold tracking-widest text-zinc-500">
-					INF-UCT: RAMTUN
-				</p>
-				<h1 class="mt-0.5 mb-0 text-xl leading-tight text-black sm:text-2xl">
-					Cuestionarios en línea
-				</h1>
-			</div>
+	<header
+		class="panel-elevated mx-auto flex w-full items-center justify-between gap-2 px-2 py-2 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-8 sm:py-3.5 lg:gap-8"
+	>
+		<div class="min-w-0">
+			<p class="m-0 text-xs font-semibold tracking-widest text-zinc-500">INF-UCT: RAMTUN</p>
+			<h1 class="mt-0.5 mb-0 text-base leading-tight text-black sm:text-2xl">
+				Cuestionarios en línea
+			</h1>
+		</div>
 
-			<div class="mt-2.5 flex items-center gap-1">
-				<a class="action-tab justify-center" data-active={isActive("/join")} href="/join">
-					<DoorOpen size={16} aria-hidden="true" />
-					<span class="hidden lg:inline">Unirse</span>
-				</a>
+		<nav class="flex items-center sm:gap-2 lg:gap-6" aria-label="Principal">
+			<a
+				class="text-tab min-h-11 min-w-11 justify-center lg:min-w-0"
+				data-active={isActive("/join")}
+				href="/join"
+				title="Unirse"
+			>
+				<DoorOpen size={16} aria-hidden="true" />
+				<span class="hidden lg:inline">Unirse</span>
+			</a>
+			<a
+				class="text-tab min-h-11 min-w-11 justify-center lg:min-w-0"
+				data-active={isActive("/results")}
+				href="/results"
+				title="Resultados"
+			>
+				<ClipboardList size={16} aria-hidden="true" />
+				<span class="hidden lg:inline">Resultados</span>
+			</a>
+			{#if showCoursesNav}
 				<a
-					class="action-tab justify-center"
-					data-active={isActive("/results")}
-					href="/results"
+					class="text-tab min-h-11 min-w-11 justify-center lg:min-w-0"
+					data-active={isActive("/courses")}
+					href="/courses"
+					title="Cursos"
 				>
-					<ClipboardList size={16} aria-hidden="true" />
-					<span class="hidden lg:inline">Resultados</span>
+					<Layers size={16} aria-hidden="true" />
+					<span class="hidden lg:inline">Cursos</span>
 				</a>
-				{#if showCoursesNav}
-					<a
-						class="action-tab justify-center"
-						data-active={isActive("/courses")}
-						href="/courses"
-					>
-						<Layers size={16} aria-hidden="true" />
-						<span class="hidden lg:inline">Cursos</span>
-					</a>
-				{/if}
+			{/if}
+		</nav>
 
-				<span class="mx-1 h-6 w-px bg-zinc-300" aria-hidden="true"></span>
-
-				<div class="flex shrink-0 items-stretch gap-1.5 sm:gap-2">
-					<div
-						class="flex h-10 min-w-0 flex-col justify-center rounded-md border border-zinc-200 bg-zinc-50 px-2.5 text-left sm:min-w-44 sm:px-3 sm:text-right"
-					>
-						<p class="truncate text-sm font-semibold text-zinc-800">
-							{authStore.user?.name}
-						</p>
-						<p class="text-xs text-zinc-600">{authStore.user?.role.toDisplay()}</p>
-					</div>
-					<button
-						class="inline-flex size-10 cursor-pointer items-center justify-center self-stretch rounded-[4px] border border-zinc-900 bg-zinc-900 text-white transition-colors duration-200 hover:bg-zinc-800"
-						type="button"
-						onclick={handleLogout}
-						title="Cerrar sesión"
-					>
-						<LogOut size={14} aria-hidden="true" />
-					</button>
-				</div>
+		<div class="flex min-w-0 items-center gap-2.5 justify-self-end">
+			<div class="hidden min-w-0 leading-tight sm:block">
+				<p class="m-0 max-w-56 truncate text-sm font-semibold text-zinc-800">
+					{authStore.user?.name}
+				</p>
+				<p class="m-0 text-xs text-zinc-600">{authStore.user?.role.toDisplay()}</p>
 			</div>
+			<ThemeToggle />
+			<button
+				class="btn-close size-11 cursor-pointer"
+				type="button"
+				onclick={handleLogout}
+				title="Cerrar sesión"
+			>
+				<LogOut size={16} aria-hidden="true" />
+			</button>
 		</div>
 	</header>
 
-	<section class="panel-elevated mx-auto w-full min-w-0 px-12 py-4">
+	<section class="panel-elevated mx-auto w-full min-w-0 px-3 py-4 sm:px-12">
 		{@render children()}
 	</section>
 </main>

@@ -3,12 +3,13 @@ target/
 node_modules
 dist/
 **/node-compile-cache
-data/
+/data/
 presharedkey
 privatekey
 **/.svelte-kit
 .svelte-kit
 apps/client/.svelte-kit
+**/.astro
 **/.pnpm-store
 
 .output

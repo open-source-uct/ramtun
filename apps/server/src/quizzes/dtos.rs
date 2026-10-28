@@ -39,6 +39,44 @@ pub struct CreateQuizDto {
 
 	#[validate(nested)]
 	pub certainty_config: Option<CertaintyTableDto>,
+
+	#[serde(default)]
+	pub results_multiple_views: bool,
+}
+
+/// Partial update: only the fields present are applied. The quiz kind and its
+/// banks are fixed at creation.
+#[derive(Clone, Debug, Validate, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[validate(schema(function = "validate_update_schema", skip_on_field_errors = false))]
+pub struct UpdateQuizDto {
+	#[validate(length(
+		min = 1,
+		max = 100,
+		message = "Title must be between 1 and 100 characters"
+	))]
+	pub title: Option<String>,
+
+	pub starts_at: Option<String>,
+
+	#[validate(range(
+		min = 1,
+		max = 240,
+		message = "Duration must be between 1 and 240 minutes"
+	))]
+	pub attempt_duration_minutes: Option<i16>,
+
+	#[validate(range(
+		min = 1,
+		max = 100,
+		message = "Question count must be between 1 and 100"
+	))]
+	pub question_count: Option<i16>,
+
+	#[validate(nested)]
+	pub certainty_config: Option<CertaintyTableDto>,
+
+	pub results_multiple_views: Option<bool>,
 }
 
 #[derive(Clone, Debug, Validate, Serialize, Deserialize)]
@@ -73,6 +111,31 @@ pub struct CertaintyScoreDto {
 fn validate_create_schema(dto: &CreateQuizDto) -> Result<(), ValidationError> {
 	validate_start_time(&dto.starts_at)?;
 	validate_quiz_mode(dto)
+}
+
+fn validate_update_schema(dto: &UpdateQuizDto) -> Result<(), ValidationError> {
+	if let Some(starts_at) = &dto.starts_at {
+		DateTime::parse_from_rfc3339(starts_at).map_err(|_| {
+			let mut err = ValidationError::new("invalid_start_time_format");
+			err.message = Some("startsAt must be a valid RFC3339 datetime string".into());
+			err
+		})?;
+	}
+
+	let has_fields = dto.title.is_some()
+		|| dto.starts_at.is_some()
+		|| dto.attempt_duration_minutes.is_some()
+		|| dto.question_count.is_some()
+		|| dto.certainty_config.is_some()
+		|| dto.results_multiple_views.is_some();
+
+	if has_fields {
+		return Ok(());
+	}
+
+	let mut err = ValidationError::new("empty_update");
+	err.message = Some("At least one field must be provided".into());
+	Err(err)
 }
 
 fn validate_start_time(start_time_utc: &str) -> Result<(), ValidationError> {
@@ -127,5 +190,39 @@ impl From<CertaintyScoreDto> for CertaintyScore {
 			correct: value.correct,
 			incorrect: value.incorrect,
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::UpdateQuizDto;
+	use validator::Validate;
+
+	fn parse(json: &str) -> UpdateQuizDto {
+		serde_json::from_str(json).expect("valid quiz payload")
+	}
+
+	#[test]
+	fn update_accepts_a_single_field() {
+		assert!(parse(r#"{"title": "Control 2"}"#).validate().is_ok());
+	}
+
+	#[test]
+	fn update_rejects_an_empty_payload() {
+		assert!(parse("{}").validate().is_err());
+	}
+
+	#[test]
+	fn update_rejects_an_invalid_start_time() {
+		assert!(parse(r#"{"startsAt": "mañana"}"#).validate().is_err());
+	}
+
+	#[test]
+	fn update_rejects_an_out_of_range_duration() {
+		assert!(
+			parse(r#"{"attemptDurationMinutes": 241}"#)
+				.validate()
+				.is_err()
+		);
 	}
 }
